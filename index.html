@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Fjordbu Sauna — Urke</title>
+<style>
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:#F6F3EC;color:#12201D;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  a{color:inherit;text-decoration:none;}
+  a:hover{color:inherit;}
+  button{font-family:inherit;cursor:pointer;border:none;}
+  input,select{font-family:inherit;}
+  input::placeholder{color:rgba(246,243,236,0.35);}
+  input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</helmet>
+
+<nav style="position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 40px;background:rgba(18,32,29,0.6);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);">
+  <a href="#top" style="color:#F6F3EC;font-size:17px;font-weight:600;letter-spacing:0.2px;">Fjordbu Sauna</a>
+  <div style="display:flex;gap:28px;align-items:center;flex-wrap:wrap;justify-content:center;">
+    <a href="#om" style="color:rgba(246,243,236,0.85);font-size:14px;" style-hover="color:#F6F3EC;">{{ t.navAbout }}</a>
+    <a href="#prisar" style="color:rgba(246,243,236,0.85);font-size:14px;" style-hover="color:#F6F3EC;">{{ t.navPrices }}</a>
+    <a href="#slik" style="color:rgba(246,243,236,0.85);font-size:14px;" style-hover="color:#F6F3EC;">{{ t.navHow }}</a>
+    <a href="#galleri" style="color:rgba(246,243,236,0.85);font-size:14px;" style-hover="color:#F6F3EC;">{{ t.navGallery }}</a>
+    <a href="#faq" style="color:rgba(246,243,236,0.85);font-size:14px;" style-hover="color:#F6F3EC;">FAQ</a>
+    <a href="#kart" style="color:rgba(246,243,236,0.85);font-size:14px;" style-hover="color:#F6F3EC;">{{ t.navMap }}</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div style="display:flex;border:1px solid rgba(246,243,236,0.3);border-radius:20px;overflow:hidden;">
+      <button onClick="{{ setNN }}" style="padding:7px 12px;font-size:12px;font-weight:600;background:{{ nnBg }};color:{{ nnFg }};">NN</button>
+      <button onClick="{{ setEN }}" style="padding:7px 12px;font-size:12px;font-weight:600;background:{{ enBg }};color:{{ enFg }};">EN</button>
+    </div>
+    <a href="#booking" style="background:#B5602A;color:#FFFFFF;padding:9px 20px;border-radius:20px;font-size:14px;font-weight:500;white-space:nowrap;" style-hover="background:#D97F4B;color:#FFFFFF;">{{ t.book }}</a>
+  </div>
+</nav>
+
+<header id="top" style="position:relative;height:100vh;min-height:640px;width:100%;display:flex;align-items:flex-end;overflow:hidden;">
+  <img src="images/sauna-sol.jpg" alt="Fjordbu Sauna ved kaien i Urke" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 60%;transform:scale(1.03);">
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(18,32,29,0.35) 0%, rgba(18,32,29,0.15) 40%, rgba(18,32,29,0.85) 100%);"></div>
+  <div style="position:relative;z-index:2;padding:0 40px 90px;width:100%;max-width:1240px;margin:0 auto;box-sizing:border-box;">
+    <div style="color:rgba(246,243,236,0.75);font-size:15px;margin-bottom:18px;">Urke, Hjørundfjorden</div>
+    <h1 style="margin:0;color:#F6F3EC;font-size:clamp(38px, 6.5vw, 84px);font-weight:600;line-height:1.04;letter-spacing:-0.02em;max-width:820px;text-wrap:balance;">{{ t.heroTitle }}</h1>
+    <p style="margin:22px 0 0;color:rgba(246,243,236,0.82);font-size:19px;max-width:480px;line-height:1.5;font-weight:300;text-wrap:pretty;">{{ t.heroBody }}</p>
+    <div style="display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;">
+      <a href="#booking" style="background:#B5602A;color:#FFFFFF;padding:14px 28px;border-radius:24px;font-size:16px;font-weight:500;display:inline-block;transition:transform .2s ease, background .2s;" style-hover="background:#D97F4B;color:#FFFFFF;transform:translateY(-1px);">{{ t.book }}</a>
+      <a href="#om" style="background:rgba(246,243,236,0.12);color:#F6F3EC;padding:14px 28px;border-radius:24px;font-size:16px;border:1px solid rgba(246,243,236,0.35);display:inline-block;transition:background .2s;" style-hover="background:rgba(246,243,236,0.2);color:#F6F3EC;">{{ t.heroSecondary }}</a>
+    </div>
+  </div>
+</header>
+
+<section id="om" style="padding:140px 40px 120px;text-align:center;">
+  <div style="max-width:1120px;margin:0 auto;">
+    <div style="color:#B5602A;font-size:15px;font-weight:500;margin-bottom:16px;">{{ t.navAbout }}</div>
+    <h2 style="margin:0 auto;font-size:clamp(30px, 4vw, 48px);font-weight:600;letter-spacing:-0.01em;line-height:1.12;max-width:780px;text-wrap:balance;">{{ t.aboutTitle }}</h2>
+    <p style="font-size:18px;color:#8A8073;max-width:600px;margin:22px auto 0;line-height:1.6;font-weight:300;text-wrap:pretty;">{{ t.aboutBody }}</p>
+  </div>
+</section>
+
+<section id="prisar" style="padding:120px 40px;background:#FFFFFF;">
+  <div style="max-width:1120px;margin:0 auto;">
+    <div style="color:#B5602A;font-size:15px;font-weight:500;margin-bottom:16px;">{{ t.navPrices }}</div>
+    <h2 style="margin:0;font-size:clamp(30px, 4vw, 48px);font-weight:600;letter-spacing:-0.01em;line-height:1.12;max-width:640px;text-wrap:balance;">{{ t.pricesTitle }}</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:1px;margin-top:60px;background:rgba(18,32,29,0.12);border:1px solid rgba(18,32,29,0.12);border-radius:20px;overflow:hidden;">
+      <sc-for list="{{ t.prices }}" as="p" hint-placeholder-count="3">
+        <div style="background:#FFFFFF;padding:40px 34px;display:flex;flex-direction:column;gap:10px;">
+          <div style="font-size:13px;color:#B5602A;font-weight:600;letter-spacing:0.02em;">{{ p.tag }}</div>
+          <div style="font-size:40px;font-weight:600;letter-spacing:-0.02em;line-height:1;">{{ p.price }}</div>
+          <h3 style="margin:6px 0 0;font-size:19px;font-weight:600;">{{ p.title }}</h3>
+          <p style="margin:0;font-size:15px;color:#8A8073;line-height:1.55;font-weight:300;">{{ p.body }}</p>
+        </div>
+      </sc-for>
+      <div style="background:#12201D;color:#F6F3EC;padding:40px 34px;display:flex;flex-direction:column;gap:14px;">
+        <div style="font-size:13px;color:#D97F4B;font-weight:600;letter-spacing:0.02em;">{{ t.hoursTag }}</div>
+        <sc-for list="{{ t.hours }}" as="h" hint-placeholder-count="3">
+          <div style="display:flex;justify-content:space-between;gap:12px;font-size:15px;padding:8px 0;border-bottom:1px solid rgba(246,243,236,0.1);"><span style="color:rgba(246,243,236,0.6);">{{ h.k }}</span><span>{{ h.v }}</span></div>
+        </sc-for>
+        <p style="margin:6px 0 0;font-size:13px;color:rgba(246,243,236,0.55);line-height:1.5;font-weight:300;">{{ t.hoursNote }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="booking" style="padding:120px 40px;background:#12201D;color:#F6F3EC;">
+  <div style="max-width:1120px;margin:0 auto;">
+    <div style="color:#D97F4B;font-size:15px;font-weight:500;margin-bottom:16px;">Booking</div>
+    <h2 style="margin:0;font-size:clamp(30px, 4vw, 48px);font-weight:600;letter-spacing:-0.01em;line-height:1.12;max-width:640px;color:#F6F3EC;text-wrap:balance;">{{ t.bookingTitle }}</h2>
+    <p style="margin:20px 0 0;font-size:18px;color:rgba(246,243,236,0.65);max-width:520px;line-height:1.6;font-weight:300;">{{ t.bookingBody }}</p>
+
+    <div style="margin-top:40px;background:#1B2E28;border-radius:20px;padding:28px;max-width:760px;border:1px solid rgba(246,243,236,0.08);">
+      <div style="display:flex;gap:8px;margin-bottom:24px;">
+        <sc-for list="{{ dots }}" as="d" hint-placeholder-count="5">
+          <div style="height:4px;flex:1;background:rgba(246,243,236,0.15);border-radius:4px;overflow:hidden;"><i style="display:block;height:100%;background:#B5602A;transition:width .4s ease;width:{{ d.width }};"></i></div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
+        <div style="animation:fadein .35s ease;">
+          <div style="font-size:18px;font-weight:600;margin-bottom:4px;">{{ t.s1Title }}</div>
+          <div style="font-size:14px;color:rgba(246,243,236,0.55);margin-bottom:18px;font-weight:300;">{{ t.s1Sub }}</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(60px, 1fr));gap:8px;">
+            <sc-for list="{{ days }}" as="d" hint-placeholder-count="7">
+              <button onClick="{{ d.select }}" style="background:{{ d.bg }};border:1px solid {{ d.border }};border-radius:12px;padding:10px 4px;text-align:center;color:#F6F3EC;transition:all .2s;" style-hover="filter:brightness(1.15);">
+                <div style="font-size:12px;color:{{ d.nameColor }};text-transform:capitalize;">{{ d.name }}</div>
+                <div style="font-size:17px;font-weight:600;margin-top:2px;">{{ d.num }}</div>
+              </button>
+            </sc-for>
+          </div>
+          <div style="display:flex;justify-content:flex-end;align-items:center;margin-top:22px;">
+            <button onClick="{{ toStep2 }}" disabled="{{ noDate }}" style="background:{{ nextBg1 }};color:{{ nextFg1 }};padding:11px 26px;border-radius:22px;font-size:14px;font-weight:500;cursor:{{ nextCursor1 }};" style-hover="filter:brightness(1.1);">{{ t.next }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:fadein .35s ease;">
+          <div style="font-size:18px;font-weight:600;margin-bottom:4px;">{{ t.s2Title }}</div>
+          <div style="font-size:14px;color:rgba(246,243,236,0.55);margin-bottom:18px;font-weight:300;">{{ dateLabel }} · {{ durationLabel }}</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(110px, 1fr));gap:8px;">
+            <sc-for list="{{ slots }}" as="s" hint-placeholder-count="7">
+              <button onClick="{{ s.select }}" disabled="{{ s.taken }}" style="background:{{ s.bg }};border:1px solid {{ s.border }};border-radius:12px;padding:10px 8px;color:#F6F3EC;font-size:14px;text-align:center;transition:all .2s;opacity:{{ s.opacity }};cursor:{{ s.cursor }};text-decoration:{{ s.deco }};" style-hover="filter:brightness(1.15);">
+                <span style="font-weight:500;">{{ s.time }}</span>
+                <span style="display:block;font-size:11px;color:rgba(246,243,236,0.6);margin-top:2px;">– {{ s.end }}</span>
+              </button>
+            </sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:12px;">
+            <button onClick="{{ toStep1 }}" style="background:none;color:rgba(246,243,236,0.55);font-size:14px;padding:12px 6px;" style-hover="color:#F6F3EC;">← {{ t.back }}</button>
+            <button onClick="{{ toStep3 }}" disabled="{{ noSlot }}" style="background:{{ nextBg2 }};color:{{ nextFg2 }};padding:11px 26px;border-radius:22px;font-size:14px;font-weight:500;cursor:{{ nextCursor2 }};" style-hover="filter:brightness(1.1);">{{ t.next }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:fadein .35s ease;">
+          <div style="font-size:18px;font-weight:600;margin-bottom:4px;">{{ t.s3Title }}</div>
+          <div style="font-size:14px;color:rgba(246,243,236,0.55);margin-bottom:18px;font-weight:300;">{{ t.s3Sub }}</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;">
+            <div>
+              <label style="font-size:13px;color:rgba(246,243,236,0.6);display:block;margin-bottom:6px;">{{ t.fName }}</label>
+              <input type="text" value="{{ name }}" onChange="{{ setName }}" placeholder="Ola Nordmann" style="width:100%;box-sizing:border-box;background:rgba(246,243,236,0.06);border:1px solid rgba(246,243,236,0.15);border-radius:10px;padding:10px 12px;color:#F6F3EC;font-size:14px;" style-focus="outline:2px solid #B5602A;outline-offset:1px;border-color:transparent;">
+            </div>
+            <div>
+              <label style="font-size:13px;color:rgba(246,243,236,0.6);display:block;margin-bottom:6px;">{{ t.fPhone }}</label>
+              <input type="tel" value="{{ phone }}" onChange="{{ setPhone }}" placeholder="900 00 000" style="width:100%;box-sizing:border-box;background:rgba(246,243,236,0.06);border:1px solid rgba(246,243,236,0.15);border-radius:10px;padding:10px 12px;color:#F6F3EC;font-size:14px;" style-focus="outline:2px solid #B5602A;outline-offset:1px;border-color:transparent;">
+            </div>
+            <div style="grid-column:1/-1;">
+              <label style="font-size:13px;color:rgba(246,243,236,0.6);display:block;margin-bottom:6px;">{{ t.fEmail }}</label>
+              <input type="email" value="{{ email }}" onChange="{{ setEmail }}" placeholder="ola@epost.no" style="width:100%;box-sizing:border-box;background:rgba(246,243,236,0.06);border:1px solid rgba(246,243,236,0.15);border-radius:10px;padding:10px 12px;color:#F6F3EC;font-size:14px;" style-focus="outline:2px solid #B5602A;outline-offset:1px;border-color:transparent;">
+            </div>
+            <div style="grid-column:1/-1;">
+              <label style="font-size:13px;color:rgba(246,243,236,0.6);display:block;margin-bottom:6px;">{{ t.fGuests }}</label>
+              <div style="display:inline-flex;align-items:stretch;background:rgba(246,243,236,0.06);border:1px solid rgba(246,243,236,0.15);border-radius:10px;overflow:hidden;">
+                <button onClick="{{ guestsMinus }}" disabled="{{ guestsMin }}" style="width:42px;background:none;color:#F6F3EC;font-size:18px;opacity:{{ guestsMinusOpacity }};" style-hover="background:rgba(246,243,236,0.1);">−</button>
+                <input type="number" min="1" max="6" value="{{ guests }}" onChange="{{ setGuests }}" onBlur="{{ clampGuests }}" style="width:56px;box-sizing:border-box;background:none;border:none;border-left:1px solid rgba(246,243,236,0.15);border-right:1px solid rgba(246,243,236,0.15);padding:10px 4px;color:#F6F3EC;font-size:15px;font-weight:600;text-align:center;-moz-appearance:textfield;" style-focus="outline:2px solid #B5602A;outline-offset:-2px;">
+                <button onClick="{{ guestsPlus }}" disabled="{{ guestsMax }}" style="width:42px;background:none;color:#F6F3EC;font-size:18px;opacity:{{ guestsPlusOpacity }};" style-hover="background:rgba(246,243,236,0.1);">+</button>
+              </div>
+              <div style="font-size:12px;color:rgba(246,243,236,0.5);margin-top:6px;">{{ t.guestsHint }}</div>
+            </div>
+          </div>
+          <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:16px;font-size:14px;color:#D97F4B;">{{ t.formError }}</div>
+          </sc-if>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:12px;">
+            <button onClick="{{ toStep2 }}" style="background:none;color:rgba(246,243,236,0.55);font-size:14px;padding:12px 6px;" style-hover="color:#F6F3EC;">← {{ t.back }}</button>
+            <button onClick="{{ tryConfirm }}" style="background:#B5602A;color:#FFFFFF;padding:11px 26px;border-radius:22px;font-size:14px;font-weight:500;" style-hover="background:#D97F4B;">{{ t.next }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStep4 }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:fadein .35s ease;">
+          <div style="font-size:18px;font-weight:600;margin-bottom:4px;">{{ t.s4Title }}</div>
+          <div style="font-size:14px;color:rgba(246,243,236,0.55);margin-bottom:18px;font-weight:300;">{{ t.s4Sub }}</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:12px;">
+            <button onClick="{{ pickVipps }}" style="background:{{ vippsBg }};border:1px solid {{ vippsBorder }};border-radius:12px;padding:14px 16px;color:#F6F3EC;text-align:left;display:flex;align-items:center;gap:16px;transition:all .2s;" style-hover="filter:brightness(1.15);">
+              <span style="width:44px;height:44px;border-radius:12px;background:#FF5B24;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#FFFFFF;flex-shrink:0;">vipps</span>
+              <span><span style="display:block;font-weight:600;font-size:16px;">Vipps</span><span style="display:block;font-size:13px;color:rgba(246,243,236,0.6);margin-top:2px;">{{ t.vippsSub }}</span></span>
+            </button>
+            <button onClick="{{ pickCard }}" style="background:{{ cardBg }};border:1px solid {{ cardBorder }};border-radius:12px;padding:14px 16px;color:#F6F3EC;text-align:left;display:flex;align-items:center;gap:16px;transition:all .2s;" style-hover="filter:brightness(1.15);">
+              <span style="width:44px;height:44px;border-radius:12px;background:#3C5A5E;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="width:24px;height:16px;border:2px solid #F6F3EC;border-radius:3px;display:block;position:relative;"><span style="position:absolute;left:0;right:0;top:4px;height:2px;background:#F6F3EC;display:block;"></span></span></span>
+              <span><span style="display:block;font-weight:600;font-size:16px;">{{ t.cardTitle }}</span><span style="display:block;font-size:13px;color:rgba(246,243,236,0.6);margin-top:2px;">{{ t.cardSub }}</span></span>
+            </button>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:12px;">
+            <button onClick="{{ toStep3 }}" style="background:none;color:rgba(246,243,236,0.55);font-size:14px;padding:12px 6px;" style-hover="color:#F6F3EC;">← {{ t.back }}</button>
+            <button onClick="{{ toStep5 }}" disabled="{{ noPay }}" style="background:{{ nextBg4 }};color:{{ nextFg4 }};padding:11px 26px;border-radius:22px;font-size:14px;font-weight:500;cursor:{{ nextCursor4 }};" style-hover="filter:brightness(1.1);">{{ t.toSummary }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStep5 }}" hint-placeholder-val="{{ false }}">
+        <div style="animation:fadein .35s ease;">
+          <div style="font-size:18px;font-weight:600;margin-bottom:4px;">{{ t.s5Title }}</div>
+          <div style="font-size:14px;color:rgba(246,243,236,0.55);margin-bottom:18px;font-weight:300;">{{ t.s5Sub }}</div>
+          <div style="background:rgba(246,243,236,0.04);border:1px solid rgba(246,243,236,0.1);border-radius:14px;padding:14px 18px;">
+            <sc-for list="{{ summary }}" as="r" hint-placeholder-count="6">
+              <div style="display:flex;justify-content:space-between;gap:16px;font-size:15px;padding:8px 0;border-bottom:1px solid rgba(246,243,236,0.08);"><span style="color:rgba(246,243,236,0.55);">{{ r.k }}</span><span style="text-align:right;">{{ r.v }}</span></div>
+            </sc-for>
+            <div style="display:flex;justify-content:space-between;gap:16px;font-size:17px;font-weight:600;padding:12px 0 4px;"><span style="color:rgba(246,243,236,0.55);font-weight:400;">{{ t.price }}</span><span>{{ priceLabel }}</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:12px;">
+            <button onClick="{{ toStep4 }}" style="background:none;color:rgba(246,243,236,0.55);font-size:14px;padding:12px 6px;" style-hover="color:#F6F3EC;">← {{ t.back }}</button>
+            <button onClick="{{ finish }}" style="background:#B5602A;color:#FFFFFF;padding:11px 26px;border-radius:22px;font-size:14px;font-weight:500;" style-hover="background:#D97F4B;">{{ payLabel }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStep6 }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:8px 0;animation:fadein .35s ease;">
+          <div style="width:64px;height:64px;border-radius:50%;background:#B5602A;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#FFFFFF;">✓</div>
+          <h3 style="margin:0 0 10px;font-size:26px;font-weight:600;">{{ t.doneTitle }}</h3>
+          <p style="margin:0 0 30px;color:rgba(246,243,236,0.6);font-size:15px;">{{ t.doneBody }}</p>
+          <div style="text-align:left;background:rgba(246,243,236,0.04);border:1px solid rgba(246,243,236,0.1);border-radius:16px;padding:24px;max-width:400px;margin:0 auto 30px;">
+            <sc-for list="{{ confirmRows }}" as="r" hint-placeholder-count="3">
+              <div style="display:flex;justify-content:space-between;gap:16px;font-size:15px;padding:8px 0;border-bottom:1px solid rgba(246,243,236,0.08);"><span style="color:rgba(246,243,236,0.55);">{{ r.k }}</span><span style="text-align:right;">{{ r.v }}</span></div>
+            </sc-for>
+          </div>
+          <button onClick="{{ reset }}" style="background:#B5602A;color:#FFFFFF;padding:11px 26px;border-radius:22px;font-size:14px;font-weight:500;" style-hover="background:#D97F4B;">{{ t.bookAgain }}</button>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</section>
+
+<section id="slik" style="padding:120px 40px;background:#FFFFFF;">
+  <div style="max-width:1120px;margin:0 auto;">
+    <div style="color:#B5602A;font-size:15px;font-weight:500;margin-bottom:16px;">{{ t.navHow }}</div>
+    <h2 style="margin:0;font-size:clamp(30px, 4vw, 48px);font-weight:600;letter-spacing:-0.01em;line-height:1.12;max-width:640px;text-wrap:balance;">{{ t.howTitle }}</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1px;margin-top:60px;background:rgba(18,32,29,0.12);border:1px solid rgba(18,32,29,0.12);border-radius:20px;overflow:hidden;">
+      <sc-for list="{{ t.how }}" as="h" hint-placeholder-count="6">
+        <div style="background:#FFFFFF;padding:40px 34px;">
+          <div style="font-size:13px;color:#B5602A;font-weight:600;margin-bottom:14px;letter-spacing:0.02em;">{{ h.tag }}</div>
+          <h3 style="margin:0 0 10px;font-size:19px;font-weight:600;">{{ h.title }}</h3>
+          <p style="margin:0;font-size:15px;color:#8A8073;line-height:1.55;font-weight:300;">{{ h.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="galleri" style="padding:120px 40px;">
+  <div style="max-width:1120px;margin:0 auto;">
+    <div style="color:#B5602A;font-size:15px;font-weight:500;margin-bottom:16px;">{{ t.navGallery }}</div>
+    <h2 style="margin:0;font-size:clamp(30px, 4vw, 48px);font-weight:600;letter-spacing:-0.01em;line-height:1.12;max-width:640px;">{{ t.galleryTitle }}</h2>
+    <div style="display:grid;grid-template-columns:repeat(6, minmax(0,1fr));grid-auto-rows:clamp(110px, 16vw, 180px);gap:14px;margin-top:50px;">
+      <a href="#galleri" style="grid-column:1/4;grid-row:1/3;overflow:hidden;border-radius:16px;display:block;"><img src="images/interior.jpg" alt="Interiør med utsikt over fjorden" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;" style-hover="transform:scale(1.06);"></a>
+      <a href="#galleri" style="grid-column:4/7;grid-row:1/2;overflow:hidden;border-radius:16px;display:block;"><img src="images/stup.jpg" alt="Stup i fjorden" style="width:100%;height:100%;object-fit:cover;object-position:center 60%;display:block;transition:transform .5s ease;" style-hover="transform:scale(1.06);"></a>
+      <a href="#galleri" style="grid-column:4/5;grid-row:2/3;overflow:hidden;border-radius:16px;display:block;"><img src="images/dusj.jpg" alt="Ferskvassdusj" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;" style-hover="transform:scale(1.06);"></a>
+      <a href="#galleri" style="grid-column:5/6;grid-row:2/3;overflow:hidden;border-radius:16px;display:block;"><img src="images/badestige.jpg" alt="Badestige" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;" style-hover="transform:scale(1.06);"></a>
+      <a href="#galleri" style="grid-column:6/7;grid-row:2/3;overflow:hidden;border-radius:16px;display:block;"><img src="images/sauna-skilt.jpg" alt="Fjordbu Sauna" style="width:100%;height:100%;object-fit:cover;object-position:left center;display:block;transition:transform .5s ease;" style-hover="transform:scale(1.06);"></a>
+      <a href="#galleri" style="grid-column:1/3;grid-row:3/4;overflow:hidden;border-radius:16px;display:block;"><img src="images/sauna-sol.jpg" alt="Saunaen i sol" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;" style-hover="transform:scale(1.06);"></a>
+      <a href="#galleri" style="grid-column:3/7;grid-row:3/4;overflow:hidden;border-radius:16px;display:block;"><img src="images/kveld.jpg" alt="Saunaen om kvelden" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease;" style-hover="transform:scale(1.06);"></a>
+    </div>
+  </div>
+</section>
+
+<section id="reglar" style="padding:120px 40px;background:#3C5A5E;color:#F6F3EC;">
+  <div style="max-width:1120px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:60px;align-items:start;">
+    <div>
+      <div style="color:#D97F4B;font-size:15px;font-weight:500;margin-bottom:16px;">{{ t.rulesTag }}</div>
+      <h2 style="margin:0;font-size:clamp(30px, 4vw, 48px);font-weight:600;letter-spacing:-0.01em;line-height:1.12;text-wrap:balance;">{{ t.rulesTitle }}</h2>
+      <p style="margin:20px 0 0;font-size:18px;color:rgba(246,243,236,0.7);line-height:1.6;font-weight:300;max-width:440px;">{{ t.rulesBody }}</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0;">
+      <sc-for list="{{ t.rules }}" as="r" hint-placeholder-count="6">
+        <div style="display:flex;gap:18px;padding:18px 0;border-bottom:1px solid rgba(246,243,236,0.15);align-items:baseline;">
+          <span style="font-size:13px;font-weight:600;color:#D97F4B;min-width:28px;">{{ r.n }}</span>
+          <span style="font-size:16px;line-height:1.5;font-weight:300;">{{ r.text }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="padding:120px 40px;">
+  <div style="max-width:800px;margin:0 auto;">
+    <div style="color:#B5602A;font-size:15px;font-weight:500;margin-bottom:16px;">FAQ</div>
+    <h2 style="margin:0 0 50px;font-size:clamp(30px, 4vw, 48px);font-weight:600;letter-spacing:-0.01em;line-height:1.12;text-wrap:balance;">{{ t.faqTitle }}</h2>
+    <div style="border-top:1px solid rgba(18,32,29,0.12);">
+      <sc-for list="{{ faq }}" as="f" hint-placeholder-count="6">
+        <div style="border-bottom:1px solid rgba(18,32,29,0.12);">
+          <button onClick="{{ f.toggle }}" style="width:100%;background:none;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 0;text-align:left;color:#12201D;font-size:18px;font-weight:500;" style-hover="color:#B5602A;">
+            <span>{{ f.q }}</span>
+            <span style="font-size:22px;color:#B5602A;transition:transform .3s;transform:{{ f.rot }};line-height:1;flex-shrink:0;">+</span>
+          </button>
+          <div style="display:grid;grid-template-rows:{{ f.rows }};transition:grid-template-rows .3s ease;">
+            <div style="overflow:hidden;"><p style="margin:0 0 24px;font-size:16px;color:#8A8073;line-height:1.6;font-weight:300;max-width:640px;">{{ f.a }}</p></div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="kart" style="padding:120px 40px;background:#FFFFFF;">
+  <div style="max-width:1120px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:50px;align-items:center;">
+    <div>
+      <div style="color:#B5602A;font-size:15px;font-weight:500;margin-bottom:16px;">{{ t.navMap }}</div>
+      <h2 style="margin:0;font-size:clamp(30px, 4vw, 48px);font-weight:600;letter-spacing:-0.01em;line-height:1.12;text-wrap:balance;">{{ t.mapTitle }}</h2>
+      <p style="margin:20px 0 0;font-size:18px;color:#8A8073;line-height:1.6;font-weight:300;max-width:460px;">{{ t.mapBody }}</p>
+      <div style="display:flex;flex-direction:column;gap:0;margin-top:30px;max-width:460px;">
+        <sc-for list="{{ t.directions }}" as="d" hint-placeholder-count="3">
+          <div style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid rgba(18,32,29,0.12);font-size:15px;"><span style="color:#8A8073;">{{ d.k }}</span><span style="text-align:right;">{{ d.v }}</span></div>
+        </sc-for>
+      </div>
+      <a href="https://www.google.com/maps/search/?api=1&query=Urke+Hj%C3%B8rundfjorden" target="_blank" style="display:inline-block;margin-top:30px;background:#12201D;color:#F6F3EC;padding:13px 24px;border-radius:24px;font-size:15px;font-weight:500;" style-hover="background:#1B2E28;color:#F6F3EC;">{{ t.mapCta }}</a>
+    </div>
+    <div style="border-radius:20px;overflow:hidden;border:1px solid rgba(18,32,29,0.12);aspect-ratio:4/3;min-height:320px;background:#E6E1D6;">
+      <iframe src="https://www.google.com/maps?q=Urke,+Hj%C3%B8rundfjorden,+Norway&z=13&output=embed" title="Kart til Urke" style="width:100%;height:100%;border:0;display:block;filter:saturate(0.85);" loading="lazy"></iframe>
+    </div>
+  </div>
+</section>
+
+<section id="omoss" style="padding:120px 40px;">
+  <div style="max-width:1120px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:50px;align-items:center;">
+    <div style="border-radius:20px;overflow:hidden;aspect-ratio:4/3;">
+      <img src="images/logo-fjord.jpg" alt="Fjordbu Sauna Urke" style="width:100%;height:100%;object-fit:cover;display:block;">
+    </div>
+    <div>
+      <div style="color:#B5602A;font-size:15px;font-weight:500;margin-bottom:16px;">{{ t.aboutUsTag }}</div>
+      <h2 style="margin:0;font-size:clamp(30px, 4vw, 48px);font-weight:600;letter-spacing:-0.01em;line-height:1.12;text-wrap:balance;">{{ t.aboutUsTitle }}</h2>
+      <p style="margin:20px 0 0;font-size:18px;color:#8A8073;line-height:1.6;font-weight:300;max-width:480px;">{{ t.aboutUs1 }}</p>
+      <p style="margin:16px 0 0;font-size:18px;color:#8A8073;line-height:1.6;font-weight:300;max-width:480px;">{{ t.aboutUs2 }}</p>
+    </div>
+  </div>
+</section>
+
+<footer id="kontakt" style="background:#12201D;color:rgba(246,243,236,0.6);padding:70px 40px 40px;border-top:1px solid rgba(246,243,236,0.08);">
+  <div style="max-width:1120px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:40px;">
+    <div>
+      <h3 style="margin:0 0 12px;color:#F6F3EC;font-size:20px;font-weight:600;">Fjordbu Sauna</h3>
+      <p style="margin:0;max-width:280px;font-size:14px;line-height:1.6;font-weight:300;">{{ t.footerBody }}</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <h4 style="margin:0 0 6px;color:#F6F3EC;font-size:13px;font-weight:500;">{{ t.contact }}</h4>
+      <a href="tel:90778712" style="font-size:14px;font-weight:300;" style-hover="color:#F6F3EC;">90 77 87 12</a>
+      <a href="mailto:post@fjordbusauna.no" style="font-size:14px;font-weight:300;" style-hover="color:#F6F3EC;">post@fjordbusauna.no</a>
+      <span style="font-size:14px;font-weight:300;">Urke småbåthamn, 6196 Norangsfjorden</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <h4 style="margin:0 0 6px;color:#F6F3EC;font-size:13px;font-weight:500;">{{ t.links }}</h4>
+      <a href="#om" style="font-size:14px;font-weight:300;" style-hover="color:#F6F3EC;">{{ t.navAbout }}</a>
+      <a href="#prisar" style="font-size:14px;font-weight:300;" style-hover="color:#F6F3EC;">{{ t.navPrices }}</a>
+      <a href="#booking" style="font-size:14px;font-weight:300;" style-hover="color:#F6F3EC;">Booking</a>
+      <a href="#reglar" style="font-size:14px;font-weight:300;" style-hover="color:#F6F3EC;">{{ t.rulesTag }}</a>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <h4 style="margin:0 0 6px;color:#F6F3EC;font-size:13px;font-weight:500;">{{ t.social }}</h4>
+      <a href="#kontakt" style="font-size:14px;font-weight:300;" style-hover="color:#F6F3EC;">Facebook</a>
+      <a href="#kontakt" style="font-size:14px;font-weight:300;" style-hover="color:#F6F3EC;">Instagram</a>
+    </div>
+  </div>
+  <div style="max-width:1120px;margin:60px auto 0;padding-top:24px;border-top:1px solid rgba(246,243,236,0.08);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <span>© 2026 Fjordbu Sauna</span>
+    <span>{{ t.footerNote }}</span>
+  </div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;price&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:450,&quot;tsType&quot;:&quot;number&quot;,&quot;unit&quot;:&quot;kr&quot;,&quot;min&quot;:0,&quot;max&quot;:5000,&quot;step&quot;:50},&quot;durationHours&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:2,&quot;tsType&quot;:&quot;number&quot;,&quot;min&quot;:1,&quot;max&quot;:6},&quot;simulateTaken&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { lang: 'nn', step: 1, date: null, slot: null, name: '', phone: '', email: '', guests: '2', pay: null, error: false, openFaq: 0 };
+  T = {
+    nn: {
+      navAbout: 'Om saunaen', navPrices: 'Prisar', navHow: 'Slik fungerer det', navGallery: 'Galleri', navMap: 'Finn oss', book: 'Bestill tid',
+      heroTitle: 'Varme, ro og fjellutsikt på vatnet.', heroBody: 'Ei flytande badstove der du bookar din eigen time, låser deg inn med kode, og har fjorden for deg sjølv.', heroSecondary: 'Sjå saunaen',
+      aboutTitle: 'Ei sjølvbetjent flytebadstove, midt i Hjørundfjorden.', aboutBody: 'Du bookar tida di på nett, får kode til nøkkelboksen når bookinga er stadfesta, og har badstova for deg og dine i to timar. Etter badstova ventar fjorden — kald, klar og rett utanfor døra.',
+      pricesTitle: 'Enkle prisar. Heile saunaen er din.',
+      prices: [
+        { tag: 'Privat leige', price: '450 kr', title: '2 timar, inntil 6 personar', body: 'Heile badstova for deg og dine. Ved, handklehengarar, dusj og omkledningsrom er inkludert.' },
+        { tag: 'Utvida', price: '800 kr', title: '4 timar, inntil 6 personar', body: 'For deg som vil ta det med ro. To samanhengande timeslott til redusert pris.' },
+        { tag: 'Klippekort', price: '2 000 kr', title: '5 × 2 timar', body: 'Gjeld i 12 månader. Bruk det sjølv eller del med vener og familie.' },
+      ],
+      hoursTag: 'Opningstider', hours: [ { k: 'Måndag–fredag', v: '08–22' }, { k: 'Laurdag–sundag', v: '08–22' }, { k: 'Siste innsjekk', v: '20:00' } ],
+      hoursNote: 'Saunaen er open heile året. Vinterstid tilrår vi å booke tidleg — omnen er varm til avtalt tid.',
+      bookingTitle: 'Vel dato, tid og gjer klar for varmen.', bookingBody: 'Ei booking gjeld to timar privat leige. Du betalar med Vipps eller kort, og får stadfesting og kode til nøkkelboksen med det same.',
+      s1Title: 'Vel dato', s1Sub: 'Ledige dagar den neste veka', s2Title: 'Vel tidspunkt', s3Title: 'Dine opplysningar', s3Sub: 'Vi sender kode til nøkkelboksen på e-post og SMS',
+      s4Title: 'Vel betaling', s4Sub: 'Du blir send vidare til trygg betaling i neste steg', vippsSub: 'Betal med mobilen', cardTitle: 'Kort', cardSub: 'Visa, Mastercard',
+      s5Title: 'Oppsummering', s5Sub: 'Sjekk at alt stemmer før du betalar',
+      fName: 'Fullt namn', fPhone: 'Telefon', fEmail: 'E-post', fGuests: 'Tal på personar', guestsHint: 'Maks 6 personar', formError: 'Fyll ut namn, telefon og e-post for å gå vidare.',
+      next: 'Neste', back: 'Tilbake', toSummary: 'Gå til oppsummering', payWith: 'Betal med', price: 'Pris',
+      date: 'Dato', time: 'Tidspunkt', persons: 'Personar', payment: 'Betaling', sentTo: 'Stadfesting sendt til', hours2: 'timar privat leige', persons1: 'person', personsN: 'personar',
+      doneTitle: 'Booking stadfesta', doneBody: 'Du får kode til nøkkelboksen på e-post og SMS rett før avtalen din startar.', bookAgain: 'Bestill ei ny tid',
+      howTitle: 'Frå booking til badstovevarme.',
+      how: [
+        { tag: 'Booking', title: 'Vel dato og tid', body: 'Bookinga gjeld to timar privat leige av saunen. Vel ledig tidspunkt i kalenderen.' },
+        { tag: 'Nøkkel', title: 'Kode til nøkkelboks', body: 'Når bookinga er stadfesta får du tilsendt kode. Lås saunen og legg nøkkelen tilbake etter avtalen.' },
+        { tag: 'Ta med', title: 'Handduk og badeklede', body: 'Ta gjerne med vassflaske. Byt om heime på førehand, så går du rett inn i varmen.' },
+        { tag: 'Fasilitetar', title: 'Omkledning og dusj', body: 'Låsbart omkledningsrom, ferskvassdusj og tilgang til ferskvatn inne i saunen. Toalett ved kaihuset.' },
+        { tag: 'Sjølvbetjent', title: 'På eige ansvar', body: 'Vi set pris på at du følgjer retningslinjene. All bruk av sauna og bading i fjorden skjer på eige ansvar.' },
+        { tag: 'Nyt', title: 'Rydd etter deg', body: 'Ta med søppel og forlat saunen slik du ønskjer å finne den. Gjerne gi oss tilbakemelding.' },
+      ],
+      galleryTitle: 'Frå kaien og inn i varmen.',
+      rulesTag: 'Reglar', rulesTitle: 'Nokre få reglar, så held vi saunaen fin for alle.', rulesBody: 'Saunaen er sjølvbetjent og ligg på vatnet. Det fungerer berre fordi gjestane tek vare på han.',
+      rules: [
+        { n: '01', text: 'Maks 6 personar i saunaen samtidig.' },
+        { n: '02', text: 'Born under 16 år berre saman med vaksen. Bading skjer på eige ansvar.' },
+        { n: '03', text: 'Bruk berre ferskvatn på omnen — aldri sjøvatn.' },
+        { n: '04', text: 'Alkohol og glas er ikkje tillate på flåten.' },
+        { n: '05', text: 'Sit alltid på handduk. Dusj før du går inn.' },
+        { n: '06', text: 'Lås døra, legg nøkkelen tilbake og ta med søppelet ditt når tida er ute.' },
+      ],
+      faqTitle: 'Ofte stilte spørsmål',
+      faq: [
+        { q: 'Kor mange kan vi vere?', a: 'Inntil 6 personar. Prisen er den same uansett kor mange de er — de leiger heile saunaen.' },
+        { q: 'Er saunaen varm når vi kjem?', a: 'Ja. Omnen blir fyrt opp før avtalt tid, så saunaen er klar når du låser deg inn. Legg gjerne på eit par vedkubbar undervegs.' },
+        { q: 'Kva om eg må avbestille?', a: 'Avbestilling inntil 24 timar før gjev full refusjon. Ved kortare frist kan du flytte bookinga éin gong.' },
+        { q: 'Kan vi bade i fjorden?', a: 'Sjølvsagt — det er halve poenget. Badestige rett frå flåten, og ferskvassdusj etterpå. Bading skjer på eige ansvar.' },
+        { q: 'Er det parkering?', a: 'Ja, gratis parkering ved kaien i Urke, om lag 50 meter frå saunaen.' },
+        { q: 'Kan vi booke for firma eller grupper?', a: 'Ta kontakt på post@fjordbusauna.no, så finn vi ei løysing med fleire slott etter kvarandre.' },
+      ],
+      mapTitle: 'Ved kaien i Urke, inst i Hjørundfjorden.', mapBody: 'Du finn oss på småbåthamna i Urke. Køyr til kaien, parker, og gå ned på flytebrygga — saunaen ligg ytst.',
+      directions: [ { k: 'Frå Ørsta', v: '45 min via Sæbø og ferje' }, { k: 'Frå Ålesund', v: '2 t via Standal–Trandal ferje' }, { k: 'Parkering', v: 'Gratis ved kaien' } ],
+      mapCta: 'Opne i Google Maps',
+      aboutUsTag: 'Om oss', aboutUsTitle: 'Bygd av folk frå Urke, for alle som kjem hit.', aboutUs1: 'Fjordbu Sauna vart bygd i 2024 av ein liten gjeng lokale eldsjeler som ville dele det beste med bygda: fjorden, fjella og stilla. Saunaen er handbygd i furu på ein flåte, og fyrt med ved frå eigen skog.', aboutUs2: 'Vi driv saunaen sjølvbetjent for å halde prisen låg og døra open for alle — turgåarar, hyttefolk, naboar og tilreisande.',
+      footerBody: 'På småbåthamna i vakre Hjørundfjorden ligg Fjordbu Sauna, ei flytande badstove der du kan nyte varme, ro og fjellutsikt — eller ta eit friskt bad i fjorden.',
+      contact: 'Kontakt', links: 'Lenker', social: 'Sosiale medium', footerNote: 'Preview-side — ikkje ei ekte booking',
+      dayNames: ['søn','man','tys','ons','tor','fre','lau'], locale: 'nn-NO',
+    },
+    en: {
+      navAbout: 'The sauna', navPrices: 'Prices', navHow: 'How it works', navGallery: 'Gallery', navMap: 'Find us', book: 'Book now',
+      heroTitle: 'Heat, calm and mountain views on the water.', heroBody: 'A floating sauna where you book your own slot, let yourself in with a code, and have the fjord to yourself.', heroSecondary: 'See the sauna',
+      aboutTitle: 'A self-service floating sauna in the heart of Hjørundfjorden.', aboutBody: 'Book your time online, receive a key-box code once confirmed, and enjoy the sauna privately for two hours. Afterwards the fjord awaits — cold, clear and right outside the door.',
+      pricesTitle: 'Simple prices. The whole sauna is yours.',
+      prices: [
+        { tag: 'Private hire', price: '450 NOK', title: '2 hours, up to 6 people', body: 'The whole sauna for you and yours. Firewood, towel hooks, shower and changing room included.' },
+        { tag: 'Extended', price: '800 NOK', title: '4 hours, up to 6 people', body: 'For those who want to take it slow. Two consecutive slots at a reduced price.' },
+        { tag: 'Multi-pass', price: '2 000 NOK', title: '5 × 2 hours', body: 'Valid for 12 months. Use it yourself or share with friends and family.' },
+      ],
+      hoursTag: 'Opening hours', hours: [ { k: 'Monday–Friday', v: '08–22' }, { k: 'Saturday–Sunday', v: '08–22' }, { k: 'Last check-in', v: '20:00' } ],
+      hoursNote: 'Open all year. In winter we recommend booking early — the stove is hot at your booked time.',
+      bookingTitle: 'Pick a date, a time, and get ready for the heat.', bookingBody: 'A booking is two hours of private hire. Pay with Vipps or card and receive your confirmation and key-box code straight away.',
+      s1Title: 'Choose a date', s1Sub: 'Available days this week', s2Title: 'Choose a time', s3Title: 'Your details', s3Sub: 'We send the key-box code by email and SMS',
+      s4Title: 'Payment', s4Sub: 'You will be taken to secure payment in the next step', vippsSub: 'Pay with your phone', cardTitle: 'Card', cardSub: 'Visa, Mastercard',
+      s5Title: 'Summary', s5Sub: 'Check that everything is right before paying',
+      fName: 'Full name', fPhone: 'Phone', fEmail: 'Email', fGuests: 'Number of people', guestsHint: 'Max 6 people', formError: 'Fill in name, phone and email to continue.',
+      next: 'Next', back: 'Back', toSummary: 'Go to summary', payWith: 'Pay with', price: 'Price',
+      date: 'Date', time: 'Time', persons: 'People', payment: 'Payment', sentTo: 'Confirmation sent to', hours2: 'hours private hire', persons1: 'person', personsN: 'people',
+      doneTitle: 'Booking confirmed', doneBody: 'You will receive the key-box code by email and SMS just before your slot starts.', bookAgain: 'Book another time',
+      howTitle: 'From booking to sauna heat.',
+      how: [
+        { tag: 'Booking', title: 'Choose date and time', body: 'A booking is two hours of private hire. Pick an available slot in the calendar.' },
+        { tag: 'Key', title: 'Key-box code', body: 'Once confirmed you receive a code. Lock the sauna and return the key after your slot.' },
+        { tag: 'Bring', title: 'Towel and swimwear', body: 'Bring a water bottle too. Change at home beforehand and step straight into the heat.' },
+        { tag: 'Facilities', title: 'Changing room and shower', body: 'Lockable changing room, fresh-water shower and fresh water inside the sauna. Toilet at the quay house.' },
+        { tag: 'Self-service', title: 'At your own risk', body: 'Please follow the guidelines. All use of the sauna and swimming in the fjord is at your own risk.' },
+        { tag: 'Enjoy', title: 'Tidy up after yourself', body: 'Take your rubbish and leave the sauna as you would like to find it. Feedback is welcome.' },
+      ],
+      galleryTitle: 'From the quay into the heat.',
+      rulesTag: 'Rules', rulesTitle: 'A few rules keep the sauna nice for everyone.', rulesBody: 'The sauna is self-service and floats on the fjord. It only works because guests look after it.',
+      rules: [
+        { n: '01', text: 'Maximum 6 people in the sauna at once.' },
+        { n: '02', text: 'Children under 16 only with an adult. Swimming is at your own risk.' },
+        { n: '03', text: 'Use only fresh water on the stove — never seawater.' },
+        { n: '04', text: 'No alcohol or glass on the raft.' },
+        { n: '05', text: 'Always sit on a towel. Shower before entering.' },
+        { n: '06', text: 'Lock the door, return the key and take your rubbish when your time is up.' },
+      ],
+      faqTitle: 'Frequently asked questions',
+      faq: [
+        { q: 'How many people can we be?', a: 'Up to 6. The price is the same however many you are — you hire the whole sauna.' },
+        { q: 'Is the sauna hot when we arrive?', a: 'Yes. The stove is lit before your slot, so the sauna is ready when you let yourself in. Add a log or two along the way.' },
+        { q: 'What if I need to cancel?', a: 'Cancel up to 24 hours before for a full refund. With shorter notice you can move the booking once.' },
+        { q: 'Can we swim in the fjord?', a: 'Of course — that is half the point. Ladder straight off the raft and a fresh-water shower afterwards. Swimming is at your own risk.' },
+        { q: 'Is there parking?', a: 'Yes, free parking at the quay in Urke, about 50 metres from the sauna.' },
+        { q: 'Can we book for a company or group?', a: 'Contact us at post@fjordbusauna.no and we will arrange consecutive slots.' },
+      ],
+      mapTitle: 'At the quay in Urke, deep in Hjørundfjorden.', mapBody: 'You will find us at the small-boat harbour in Urke. Drive to the quay, park, and walk down onto the floating jetty — the sauna is at the far end.',
+      directions: [ { k: 'From Ørsta', v: '45 min via Sæbø and ferry' }, { k: 'From Ålesund', v: '2 h via Standal–Trandal ferry' }, { k: 'Parking', v: 'Free at the quay' } ],
+      mapCta: 'Open in Google Maps',
+      aboutUsTag: 'About us', aboutUsTitle: 'Built by people from Urke, for everyone who visits.', aboutUs1: 'Fjordbu Sauna was built in 2024 by a small group of locals who wanted to share the best of the village: the fjord, the mountains and the quiet. The sauna is hand-built in pine on a raft and fired with wood from our own forest.', aboutUs2: 'We run it self-service to keep the price low and the door open to everyone — hikers, cabin owners, neighbours and travellers.',
+      footerBody: 'At the small-boat harbour in beautiful Hjørundfjorden lies Fjordbu Sauna, a floating sauna where you can enjoy heat, calm and mountain views — or take a refreshing dip in the fjord.',
+      contact: 'Contact', links: 'Links', social: 'Social', footerNote: 'Preview site — not a real booking',
+      dayNames: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], locale: 'en-GB',
+    },
+  };
+  fmt(d, t) { return d ? d.toLocaleDateString(t.locale, { weekday: 'long', day: 'numeric', month: 'long' }) : ''; }
+  endOf(t) { const dur = this.props.durationHours ?? 2; return String((parseInt(t) + dur) % 24).padStart(2, '0') + ':00'; }
+  go(n) { this.setState({ step: n, error: false }); }
+  renderVals() {
+    const s = this.state, t = this.T[s.lang];
+    const dur = this.props.durationHours ?? 2, price = this.props.price ?? 450, showTaken = this.props.simulateTaken ?? true;
+    const today = new Date();
+    const days = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(today); d.setDate(today.getDate() + i);
+      const sel = s.date && s.date.toDateString() === d.toDateString();
+      return { name: t.dayNames[d.getDay()], num: d.getDate(), bg: sel ? '#B5602A' : 'rgba(246,243,236,0.05)', border: sel ? '#B5602A' : 'rgba(246,243,236,0.12)', nameColor: sel ? 'rgba(255,255,255,0.85)' : 'rgba(246,243,236,0.6)', select: () => this.setState({ date: d, slot: null }) };
+    });
+    const seed = s.date ? s.date.getDate() : 1;
+    const slots = ['08:00','10:00','12:00','14:00','16:00','18:00','20:00'].map((tm, i) => {
+      const taken = showTaken && (seed + i) % 5 === 0, sel = s.slot === tm;
+      return { time: tm, end: this.endOf(tm), taken, bg: sel ? '#B5602A' : 'rgba(246,243,236,0.05)', border: sel ? '#B5602A' : 'rgba(246,243,236,0.12)', opacity: taken ? 0.3 : 1, cursor: taken ? 'not-allowed' : 'pointer', deco: taken ? 'line-through' : 'none', select: () => this.setState({ slot: tm }) };
+    });
+    const noDate = !s.date, noSlot = !s.slot, noPay = !s.pay;
+    const dis = (off) => ({ bg: off ? 'rgba(246,243,236,0.12)' : '#B5602A', fg: off ? 'rgba(246,243,236,0.35)' : '#FFFFFF', cur: off ? 'not-allowed' : 'pointer' });
+    const d1 = dis(noDate), d2 = dis(noSlot), d4 = dis(noPay);
+    const slotLabel = s.slot ? `${s.slot} – ${this.endOf(s.slot)}` : '';
+    const payName = s.pay === 'vipps' ? 'Vipps' : s.pay === 'card' ? t.cardTitle : '';
+    const gN = Math.min(6, Math.max(1, parseInt(s.guests) || 1));
+    const guestsLabel = `${gN} ${gN === 1 ? t.persons1 : t.personsN}`;
+    const faq = t.faq.map((f, i) => { const open = s.openFaq === i; return { ...f, rot: open ? 'rotate(45deg)' : 'rotate(0deg)', rows: open ? '1fr' : '0fr', toggle: () => this.setState({ openFaq: open ? -1 : i }) }; });
+    const on = s.lang === 'nn';
+    return {
+      t, faq,
+      setNN: () => this.setState({ lang: 'nn' }), setEN: () => this.setState({ lang: 'en' }),
+      nnBg: on ? '#F6F3EC' : 'transparent', nnFg: on ? '#12201D' : 'rgba(246,243,236,0.8)', enBg: on ? 'transparent' : '#F6F3EC', enFg: on ? 'rgba(246,243,236,0.8)' : '#12201D',
+      dots: [1,2,3,4,5].map(i => ({ width: i <= Math.min(s.step, 5) ? '100%' : '0%' })),
+      days, slots, noDate, noSlot, noPay,
+      isStep1: s.step === 1, isStep2: s.step === 2, isStep3: s.step === 3, isStep4: s.step === 4, isStep5: s.step === 5, isStep6: s.step === 6,
+      nextBg1: d1.bg, nextFg1: d1.fg, nextCursor1: d1.cur, nextBg2: d2.bg, nextFg2: d2.fg, nextCursor2: d2.cur, nextBg4: d4.bg, nextFg4: d4.fg, nextCursor4: d4.cur,
+      dateLabel: this.fmt(s.date, t), durationLabel: `${dur} ${t.hours2}`,
+      name: s.name, phone: s.phone, email: s.email, guests: s.guests, hasError: s.error,
+      setName: e => this.setState({ name: e.target.value }), setPhone: e => this.setState({ phone: e.target.value }),
+      setEmail: e => this.setState({ email: e.target.value }), setGuests: e => this.setState({ guests: e.target.value }),
+      clampGuests: () => this.setState({ guests: String(Math.min(6, Math.max(1, parseInt(s.guests) || 1))) }),
+      guestsMinus: () => this.setState({ guests: String(Math.max(1, (parseInt(s.guests) || 1) - 1)) }),
+      guestsPlus: () => this.setState({ guests: String(Math.min(6, (parseInt(s.guests) || 1) + 1)) }),
+      guestsMin: (parseInt(s.guests) || 1) <= 1, guestsMax: (parseInt(s.guests) || 1) >= 6,
+      guestsMinusOpacity: (parseInt(s.guests) || 1) <= 1 ? 0.35 : 1, guestsPlusOpacity: (parseInt(s.guests) || 1) >= 6 ? 0.35 : 1,
+      toStep1: () => this.go(1), toStep2: () => this.go(2), toStep3: () => this.go(3), toStep4: () => this.go(4), toStep5: () => this.go(5),
+      tryConfirm: () => { if (!s.name.trim() || !s.phone.trim() || !s.email.trim()) { this.setState({ error: true }); return; } this.go(4); },
+      pickVipps: () => this.setState({ pay: 'vipps' }), pickCard: () => this.setState({ pay: 'card' }),
+      vippsBg: s.pay === 'vipps' ? 'rgba(181,96,42,0.25)' : 'rgba(246,243,236,0.05)', vippsBorder: s.pay === 'vipps' ? '#B5602A' : 'rgba(246,243,236,0.12)',
+      cardBg: s.pay === 'card' ? 'rgba(181,96,42,0.25)' : 'rgba(246,243,236,0.05)', cardBorder: s.pay === 'card' ? '#B5602A' : 'rgba(246,243,236,0.12)',
+      payLabel: `${t.payWith} ${payName} · ${price} kr`,
+      finish: () => this.go(6),
+      reset: () => this.setState({ step: 1, date: null, slot: null, name: '', phone: '', email: '', pay: null, error: false }),
+      summary: [ { k: t.date, v: this.fmt(s.date, t) }, { k: t.time, v: slotLabel }, { k: t.fName, v: s.name }, { k: t.persons, v: guestsLabel }, { k: t.fPhone, v: s.phone }, { k: t.payment, v: payName } ],
+      priceLabel: `${price} kr`,
+      confirmRows: [ { k: t.date, v: this.fmt(s.date, t) }, { k: t.time, v: slotLabel }, { k: t.sentTo, v: s.email } ],
+    };
+  }
+}
+</script>
+</body>
+</html>
