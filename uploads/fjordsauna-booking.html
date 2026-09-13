@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="nn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fjordbu Sauna — Booking</title>
+<style>
+  :root{
+    --dark:#12201D;
+    --dark-2:#1B2E28;
+    --cream:#F6F3EC;
+    --ember:#B5602A;
+    --ember-2:#D97F4B;
+    --fjord:#3C5A5E;
+    --stone:#8A8073;
+    --white:#FFFFFF;
+    --line: rgba(18,32,29,0.12);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Helvetica, Arial, sans-serif;
+    background:var(--cream);
+    color:var(--dark);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+  button{font-family:inherit; cursor:pointer; border:none;}
+
+  /* NAV */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 40px;
+    background:rgba(18,32,29,0.55);
+    backdrop-filter:blur(16px) saturate(150%);
+    -webkit-backdrop-filter:blur(16px) saturate(150%);
+    transition:padding .3s ease, background .3s ease;
+  }
+  .nav.scrolled{padding:12px 40px; background:rgba(18,32,29,0.85);}
+  .nav-logo{color:var(--cream); font-size:17px; font-weight:600; letter-spacing:0.2px;}
+  .nav-links{display:flex; gap:32px; align-items:center;}
+  .nav-links a{color:rgba(246,243,236,0.85); font-size:14px; font-weight:400; transition:color .2s;}
+  .nav-links a:hover{color:var(--cream);}
+  .nav-cta{
+    background:var(--ember); color:var(--white); padding:9px 20px; border-radius:20px;
+    font-size:14px; font-weight:500; transition:background .2s;
+  }
+  .nav-cta:hover{background:var(--ember-2);}
+  .nav-burger{display:none; color:var(--cream); font-size:22px; background:none;}
+
+  /* HERO */
+  .hero{
+    position:relative; height:100vh; min-height:640px; width:100%;
+    display:flex; align-items:flex-end; overflow:hidden;
+  }
+  .hero-img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    transform:scale(1.03);
+  }
+  .hero-overlay{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(18,32,29,0.35) 0%, rgba(18,32,29,0.15) 40%, rgba(18,32,29,0.85) 100%);
+  }
+  .hero-content{
+    position:relative; z-index:2; padding:0 40px 90px; width:100%;
+    max-width:1240px; margin:0 auto;
+  }
+  .hero-eyebrow{
+    color:rgba(246,243,236,0.75); font-size:15px; margin-bottom:18px; font-weight:400;
+  }
+  .hero h1{
+    color:var(--cream); font-size:clamp(38px, 6.5vw, 84px); font-weight:600;
+    line-height:1.04; letter-spacing:-0.02em; max-width:820px;
+  }
+  .hero p{
+    color:rgba(246,243,236,0.82); font-size:19px; max-width:480px; margin-top:22px; line-height:1.5; font-weight:300;
+  }
+  .hero-actions{display:flex; gap:14px; margin-top:34px;}
+  .btn-primary{
+    background:var(--ember); color:var(--white); padding:14px 28px; border-radius:24px;
+    font-size:16px; font-weight:500; transition:transform .2s ease, background .2s;
+    display:inline-block;
+  }
+  .btn-primary:hover{background:var(--ember-2); transform:translateY(-1px);}
+  .btn-ghost{
+    background:rgba(246,243,236,0.12); color:var(--cream); padding:14px 28px; border-radius:24px;
+    font-size:16px; font-weight:400; border:1px solid rgba(246,243,236,0.35);
+    transition:background .2s;
+  }
+  .btn-ghost:hover{background:rgba(246,243,236,0.2);}
+
+  /* SECTION shared */
+  section{padding:120px 40px;}
+  .section-inner{max-width:1120px; margin:0 auto;}
+  .section-label{color:var(--ember); font-size:15px; font-weight:500; margin-bottom:16px;}
+  .section-title{
+    font-size:clamp(30px, 4vw, 48px); font-weight:600; letter-spacing:-0.01em; line-height:1.12;
+    max-width:640px;
+  }
+  .section-body{font-size:18px; color:var(--stone); max-width:520px; margin-top:20px; line-height:1.6; font-weight:300;}
+
+  /* INTRO */
+  .intro{text-align:center; padding-top:140px;}
+  .intro .section-title{max-width:780px; margin:0 auto;}
+  .intro .section-body{max-width:600px; margin:22px auto 0;}
+
+  /* HOW IT WORKS */
+  .how{background:var(--white);}
+  .how-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:1px;
+    margin-top:60px; background:var(--line); border:1px solid var(--line); border-radius:20px; overflow:hidden;
+  }
+  .how-item{background:var(--white); padding:40px 34px;}
+  .how-item h3{font-size:19px; font-weight:600; margin-bottom:10px;}
+  .how-item p{font-size:15px; color:var(--stone); line-height:1.55; font-weight:300;}
+  .how-num{font-size:13px; color:var(--ember); font-weight:600; margin-bottom:14px; letter-spacing:0.02em;}
+
+  /* GALLERY */
+  .gallery-header{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:20px;}
+  .gallery-grid{
+    display:grid; grid-template-columns:repeat(6, 1fr); grid-auto-rows:180px; gap:14px; margin-top:50px;
+  }
+  .gallery-grid img{width:100%; height:100%; object-fit:cover; border-radius:16px; transition:transform .5s ease;}
+  .gallery-grid a{overflow:hidden; border-radius:16px; display:block;}
+  .gallery-grid a:hover img{transform:scale(1.06);}
+  .g1{grid-column:1/4; grid-row:1/3;}
+  .g2{grid-column:4/7; grid-row:1/2;}
+  .g3{grid-column:4/5; grid-row:2/3;}
+  .g4{grid-column:5/6; grid-row:2/3;}
+  .g5{grid-column:6/7; grid-row:2/3;}
+  .g6{grid-column:1/3; grid-row:3/4;}
+  .g7{grid-column:3/7; grid-row:3/4;}
+
+  /* BOOKING */
+  .booking{background:var(--dark); color:var(--cream); position:relative;}
+  .booking .section-label{color:var(--ember-2);}
+  .booking .section-title{color:var(--cream);}
+  .booking .section-body{color:rgba(246,243,236,0.65);}
+
+  .booking-card{
+    margin-top:56px; background:var(--dark-2); border-radius:24px; padding:44px;
+    border:1px solid rgba(246,243,236,0.08);
+  }
+  .steps-track{display:flex; gap:8px; margin-bottom:36px;}
+  .step-dot{height:4px; flex:1; background:rgba(246,243,236,0.15); border-radius:4px; overflow:hidden;}
+  .step-dot i{display:block; height:100%; width:0%; background:var(--ember); transition:width .4s ease;}
+
+  .step{display:none;}
+  .step.active{display:block; animation:fadein .35s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  .step-title{font-size:22px; font-weight:600; margin-bottom:6px;}
+  .step-sub{font-size:14px; color:rgba(246,243,236,0.55); margin-bottom:28px; font-weight:300;}
+
+  .day-row{display:grid; grid-template-columns:repeat(7, 1fr); gap:10px;}
+  .day-btn{
+    background:rgba(246,243,236,0.05); border:1px solid rgba(246,243,236,0.12);
+    border-radius:14px; padding:16px 6px; text-align:center; color:var(--cream);
+    transition:all .2s;
+  }
+  .day-btn .dname{font-size:12px; color:rgba(246,243,236,0.5); text-transform:capitalize; font-weight:400;}
+  .day-btn .dnum{font-size:20px; font-weight:600; margin-top:4px;}
+  .day-btn:hover{background:rgba(246,243,236,0.1);}
+  .day-btn.selected{background:var(--ember); border-color:var(--ember);}
+  .day-btn.selected .dname{color:rgba(255,255,255,0.8);}
+
+  .slot-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;}
+  .slot-btn{
+    background:rgba(246,243,236,0.05); border:1px solid rgba(246,243,236,0.12);
+    border-radius:14px; padding:16px 10px; color:var(--cream); font-size:15px; text-align:center;
+    transition:all .2s; position:relative;
+  }
+  .slot-btn:hover{background:rgba(246,243,236,0.1);}
+  .slot-btn.selected{background:var(--ember); border-color:var(--ember);}
+  .slot-btn.taken{opacity:0.3; cursor:not-allowed; text-decoration:line-through;}
+  .slot-btn .stime{font-weight:500;}
+  .slot-btn .sdur{display:block; font-size:12px; color:rgba(246,243,236,0.5); margin-top:3px;}
+  .slot-btn.selected .sdur{color:rgba(255,255,255,0.75);}
+
+  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .form-grid .full{grid-column:1/3;}
+  .field label{font-size:13px; color:rgba(246,243,236,0.6); display:block; margin-bottom:8px;}
+  .field input, .field select{
+    width:100%; background:rgba(246,243,236,0.06); border:1px solid rgba(246,243,236,0.15);
+    border-radius:12px; padding:13px 14px; color:var(--cream); font-size:15px; font-family:inherit;
+  }
+  .field input::placeholder{color:rgba(246,243,236,0.35);}
+  .field input:focus, .field select:focus{outline:2px solid var(--ember); outline-offset:1px; border-color:transparent;}
+  .field{margin-bottom:16px;}
+
+  .summary-box{
+    background:rgba(246,243,236,0.04); border:1px solid rgba(246,243,236,0.1); border-radius:16px;
+    padding:22px 24px; margin-bottom:28px;
+  }
+  .summary-row{display:flex; justify-content:space-between; font-size:15px; padding:8px 0; border-bottom:1px solid rgba(246,243,236,0.08);}
+  .summary-row:last-child{border-bottom:none;}
+  .summary-row span:first-child{color:rgba(246,243,236,0.55);}
+  .summary-total{font-weight:600; font-size:17px; margin-top:4px;}
+
+  .step-actions{display:flex; justify-content:space-between; align-items:center; margin-top:32px;}
+  .btn-back{color:rgba(246,243,236,0.55); font-size:14px; padding:12px 6px;}
+  .btn-back:hover{color:var(--cream);}
+  .btn-next{background:var(--ember); color:var(--white); padding:14px 32px; border-radius:24px; font-size:15px; font-weight:500;}
+  .btn-next:hover{background:var(--ember-2);}
+  .btn-next:disabled{background:rgba(246,243,236,0.12); color:rgba(246,243,236,0.35); cursor:not-allowed;}
+
+  .confirm-wrap{text-align:center; padding:20px 0;}
+  .confirm-icon{
+    width:64px; height:64px; border-radius:50%; background:var(--ember); margin:0 auto 24px;
+    display:flex; align-items:center; justify-content:center; font-size:28px; color:white;
+  }
+  .confirm-wrap h3{font-size:26px; font-weight:600; margin-bottom:10px;}
+  .confirm-wrap p{color:rgba(246,243,236,0.6); font-size:15px; margin-bottom:30px;}
+  .confirm-detail{
+    text-align:left; background:rgba(246,243,236,0.04); border:1px solid rgba(246,243,236,0.1);
+    border-radius:16px; padding:24px; max-width:400px; margin:0 auto 30px;
+  }
+
+  /* FOOTER */
+  footer{background:var(--dark); color:rgba(246,243,236,0.6); padding:70px 40px 40px; border-top:1px solid rgba(246,243,236,0.08);}
+  .footer-inner{max-width:1120px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:40px;}
+  .footer-brand h3{color:var(--cream); font-size:20px; font-weight:600; margin-bottom:12px;}
+  .footer-brand p{max-width:280px; font-size:14px; line-height:1.6; font-weight:300;}
+  .footer-col h4{color:var(--cream); font-size:13px; font-weight:500; margin-bottom:14px;}
+  .footer-col a, .footer-col p{display:block; font-size:14px; margin-bottom:8px; font-weight:300;}
+  .footer-col a:hover{color:var(--cream);}
+  .footer-bottom{max-width:1120px; margin:60px auto 0; padding-top:24px; border-top:1px solid rgba(246,243,236,0.08); font-size:13px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+
+  @media (max-width:900px){
+    .nav-links{display:none;}
+    .nav-burger{display:block;}
+    section{padding:80px 24px;}
+    .how-grid{grid-template-columns:1fr;}
+    .gallery-grid{grid-template-columns:repeat(2, 1fr); grid-auto-rows:150px;}
+    .g1,.g2,.g3,.g4,.g5,.g6,.g7{grid-column:auto; grid-row:auto;}
+    .g1{grid-column:1/3; grid-row:span 2;}
+    .form-grid{grid-template-columns:1fr;}
+    .form-grid .full{grid-column:1;}
+    .day-row{grid-template-columns:repeat(4,1fr); row-gap:10px;}
+    .slot-grid{grid-template-columns:repeat(2,1fr);}
+    .booking-card{padding:26px;}
+    .footer-inner{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-logo">Fjordbu Sauna</div>
+  <div class="nav-links">
+    <a href="#om">Om saunaen</a>
+    <a href="#slik">Slik fungerer det</a>
+    <a href="#galleri">Galleri</a>
+    <a href="#kontakt">Kontakt</a>
+  </div>
+  <a href="#booking" class="nav-cta">Bestill tid</a>
+  <button class="nav-burger">☰</button>
+</nav>
+
+<header class="hero">
+  <img class="hero-img" src="https://cdn.sanity.io/images/yz4fcmkx/production/c57e45280585165f140d35e8be51ad4497d46b4a-1366x768.png?auto=format&fit=max&q=80&w=2000" alt="Fjordbu Sauna Urke ved kaien">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Urke, Hjørundfjorden</div>
+    <h1>Varme, ro og<br>fjellutsikt på vatnet.</h1>
+    <p>Ei flytande badstove der du bookar din eigen time, låser deg inn med kode, og har fjorden for deg sjølv.</p>
+    <div class="hero-actions">
+      <a href="#booking" class="btn-primary">Bestill tid</a>
+      <a href="#om" class="btn-ghost">Sjå saunaen</a>
+    </div>
+  </div>
+</header>
+
+<section class="intro" id="om">
+  <div class="section-inner">
+    <div class="section-label">Om saunaen</div>
+    <h2 class="section-title">Ei sjølvbetjent flytebadstove, midt i Hjørundfjorden.</h2>
+    <p class="section-body">Du bookar tida di på nett, får kode til nøkkelboksen når bookinga er stadfesta, og har badstova for deg og dine i to timar. Etter badstova ventar fjorden — kald, klar og rett utanfor døra.</p>
+  </div>
+</section>
+
+<section class="how" id="slik">
+  <div class="section-inner">
+    <div class="section-label">Slik fungerer det</div>
+    <h2 class="section-title">Frå booking til badstovevarme, i fire steg.</h2>
+    <div class="how-grid">
+      <div class="how-item">
+        <div class="how-num">Booking</div>
+        <h3>Vel dato og tid</h3>
+        <p>Bookinga gjeld to timar privat leige av saunen. Vel ledig tidspunkt i kalenderen under.</p>
+      </div>
+      <div class="how-item">
+        <div class="how-num">Nøkkel</div>
+        <h3>Kode til nøkkelboks</h3>
+        <p>Når bookinga er stadfesta får du tilsendt kode. Lås saunen og legg nøkkelen tilbake etter avtalen.</p>
+      </div>
+      <div class="how-item">
+        <div class="how-num">Ta med</div>
+        <h3>Handduk og badeklede</h3>
+        <p>Ta gjerne med vassflaske. Byt om heime på førehand, så går du rett inn i varmen.</p>
+      </div>
+      <div class="how-item">
+        <div class="how-num">Fasilitetar</div>
+        <h3>Omkledning og dusj</h3>
+        <p>Låsbart omkledningsrom, ferskvatnsdusj og tilgang til ferskvatn inne i saunen. Toalett ved kaihuset.</p>
+      </div>
+      <div class="how-item">
+        <div class="how-num">Sjølvbetjent</div>
+        <h3>På eige ansvar</h3>
+        <p>Vi set pris på at du følgjer retningslinjene. All bruk av sauna og bading i fjorden skjer på eige ansvar.</p>
+      </div>
+      <div class="how-item">
+        <div class="how-num">Nyt</div>
+        <h3>Rydd etter deg</h3>
+        <p>Ta med søppel og forlat saunen slik du ønskjer å finne den. Gjerne gi oss tilbakemelding.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="galleri">
+  <div class="section-inner">
+    <div class="gallery-header">
+      <div>
+        <div class="section-label">Galleri</div>
+        <h2 class="section-title">Frå kaien og inn i varmen.</h2>
+      </div>
+    </div>
+    <div class="gallery-grid">
+      <a class="g1" href="#"><img src="https://cdn.sanity.io/images/yz4fcmkx/production/221a474ee4a6a1967a967717cfe8a09451771dce-1179x1563.jpg?auto=format&fit=max&q=85&w=900" alt="Utsikt frå badstova"></a>
+      <a class="g2" href="#"><img src="https://cdn.sanity.io/images/yz4fcmkx/production/bd3264ffc530d94255bc02d3c8b160544044874c-1179x1407.jpg?auto=format&fit=max&q=85&w=900" alt="Interiør i saunaen"></a>
+      <a class="g3" href="#"><img src="https://cdn.sanity.io/images/yz4fcmkx/production/dfb8e168dd8c7bc1509469fc6a197b9f51a35e28-1179x1557.jpg?auto=format&fit=max&q=85&w=500" alt="Fjorden ved Urke"></a>
+      <a class="g4" href="#"><img src="https://cdn.sanity.io/images/yz4fcmkx/production/26ab320d92982533f3ca043c00256ef2ac55cfd7-1179x1553.jpg?auto=format&fit=max&q=85&w=500" alt="Badstoveomnen"></a>
+      <a class="g5" href="#"><img src="https://cdn.sanity.io/images/yz4fcmkx/production/6e31e91b3045884a11642c9f2a1216d25122667a-1179x1562.jpg?auto=format&fit=max&q=85&w=500" alt="Kaien ved Urke"></a>
+      <a class="g6" href="#"><img src="https://cdn.sanity.io/images/yz4fcmkx/production/a82cb26e74a1c3b3667f0c2f528cef492a904193-1179x1556.jpg?auto=format&fit=max&q=85&w=700" alt="Fjellutsikt frå fjorden"></a>
+      <a class="g7" href="#"><img src="https://cdn.sanity.io/images/yz4fcmkx/production/c57e45280585165f140d35e8be51ad4497d46b4a-1366x768.png?auto=format&fit=max&q=85&w=1000" alt="Fjordbu Sauna sett frå vatnet"></a>
+    </div>
+  </div>
+</section>
+
+<section class="booking" id="booking">
+  <div class="section-inner">
+    <div class="section-label">Booking</div>
+    <h2 class="section-title">Vel dato, tid og gjer klar for varmen.</h2>
+    <p class="section-body">Ei booking gjeld to timar privat leige. Du får stadfesting og kode til nøkkelboksen med det same.</p>
+
+    <div class="booking-card">
+      <div class="steps-track">
+        <div class="step-dot"><i id="dot1"></i></div>
+        <div class="step-dot"><i id="dot2"></i></div>
+        <div class="step-dot"><i id="dot3"></i></div>
+        <div class="step-dot"><i id="dot4"></i></div>
+      </div>
+
+      <!-- STEP 1: DATE -->
+      <div class="step active" id="step1">
+        <div class="step-title">Vel dato</div>
+        <div class="step-sub">Ledige dagar dei neste to vekene</div>
+        <div class="day-row" id="dayRow"></div>
+        <div class="step-actions">
+          <span></span>
+          <button class="btn-next" id="toStep2" disabled onclick="goStep(2)">Neste</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: TIME -->
+      <div class="step" id="step2">
+        <div class="step-title">Vel tidspunkt</div>
+        <div class="step-sub" id="selectedDateLabel">2 timar privat leige</div>
+        <div class="slot-grid" id="slotGrid"></div>
+        <div class="step-actions">
+          <button class="btn-back" onclick="goStep(1)">← Tilbake</button>
+          <button class="btn-next" id="toStep3" disabled onclick="goStep(3)">Neste</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: DETAILS -->
+      <div class="step" id="step3">
+        <div class="step-title">Dine opplysningar</div>
+        <div class="step-sub">Vi sender kode til nøkkelboksen på e-post og SMS</div>
+        <div class="form-grid">
+          <div class="field"><label>Fullt namn</label><input type="text" id="fName" placeholder="Ola Nordmann"></div>
+          <div class="field"><label>Telefon</label><input type="tel" id="fPhone" placeholder="900 00 000"></div>
+          <div class="field full"><label>E-post</label><input type="email" id="fEmail" placeholder="ola@epost.no"></div>
+          <div class="field full"><label>Tal på personar</label>
+            <select id="fGuests">
+              <option>1 person</option>
+              <option selected>2 personar</option>
+              <option>3 personar</option>
+              <option>4 personar</option>
+              <option>5+ personar</option>
+            </select>
+          </div>
+        </div>
+        <div class="step-actions">
+          <button class="btn-back" onclick="goStep(2)">← Tilbake</button>
+          <button class="btn-next" id="toStep4" onclick="tryConfirm()">Gå til oppsummering</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: CONFIRM -->
+      <div class="step" id="step4">
+        <div class="step-title">Oppsummering</div>
+        <div class="step-sub">Sjekk at alt stemmer før du bookar</div>
+        <div class="summary-box" id="summaryBox"></div>
+        <div class="step-actions">
+          <button class="btn-back" onclick="goStep(3)">← Tilbake</button>
+          <button class="btn-next" onclick="finishBooking()">Bekreft booking</button>
+        </div>
+      </div>
+
+      <!-- STEP 5 (visual only): SUCCESS -->
+      <div class="step" id="step5">
+        <div class="confirm-wrap">
+          <div class="confirm-icon">✓</div>
+          <h3>Booking stadfesta</h3>
+          <p>Du får kode til nøkkelboksen på e-post rett før avtalen din startar.</p>
+          <div class="confirm-detail" id="confirmDetail"></div>
+          <button class="btn-next" onclick="resetBooking()">Bestill ei ny tid</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="kontakt">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h3>Fjordbu Sauna</h3>
+      <p>På småbåthamna i vakre Hjørundfjorden ligg Fjordbu Sauna, ei flytande badstove der du kan nyte varme, ro og fjellutsikt — eller ta eit friskt bad i fjorden.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Kontakt</h4>
+      <a href="tel:90778712">90 77 87 12</a>
+      <a href="mailto:post@fjordbusauna.no">post@fjordbusauna.no</a>
+    </div>
+    <div class="footer-col">
+      <h4>Lenker</h4>
+      <a href="#om">Om saunaen</a>
+      <a href="#slik">Slik fungerer det</a>
+      <a href="#booking">Booking</a>
+    </div>
+    <div class="footer-col">
+      <h4>Sosiale medium</h4>
+      <a href="#">Facebook</a>
+      <a href="#">Instagram</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Fjordbu Sauna</span>
+    <span>Preview-side — ikkje ei ekte booking</span>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll state
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Build next 14 days
+  const dayNames = ['søn','man','tys','ons','tor','fre','lau'];
+  const dayRow = document.getElementById('dayRow');
+  let selectedDate = null;
+  let selectedSlot = null;
+  const today = new Date();
+  const days = [];
+
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    days.push(d);
+  }
+
+  days.slice(0,7).forEach((d, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'day-btn';
+    btn.innerHTML = `<div class="dname">${dayNames[d.getDay()]}</div><div class="dnum">${d.getDate()}</div>`;
+    btn.onclick = () => selectDate(d, btn);
+    dayRow.appendChild(btn);
+  });
+
+  function selectDate(d, btn) {
+    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedDate = d;
+    document.getElementById('toStep2').disabled = false;
+    document.getElementById('dot1').style.width = '100%';
+    const opts = { weekday: 'long', day: 'numeric', month: 'long' };
+    document.getElementById('selectedDateLabel').textContent =
+      d.toLocaleDateString('nb-NO', opts) + ' · 2 timar privat leige';
+  }
+
+  // Time slots
+  const allSlots = ['08:00','10:00','12:00','14:00','16:00','18:00','20:00'];
+  const slotGrid = document.getElementById('slotGrid');
+
+  function renderSlots() {
+    slotGrid.innerHTML = '';
+    selectedSlot = null;
+    document.getElementById('toStep3').disabled = true;
+    // pseudo-random "taken" slots based on the date, so it feels alive but is stable per date
+    const seed = selectedDate ? selectedDate.getDate() : 1;
+    allSlots.forEach((t, i) => {
+      const taken = (seed + i) % 5 === 0;
+      const btn = document.createElement('button');
+      btn.className = 'slot-btn' + (taken ? ' taken' : '');
+      const endHour = (parseInt(t) + 2) % 24;
+      btn.innerHTML = `<span class="stime">${t}</span><span class="sdur">– ${String(endHour).padStart(2,'0')}:00</span>`;
+      if (!taken) {
+        btn.onclick = () => {
+          document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedSlot = t;
+          document.getElementById('toStep3').disabled = false;
+          document.getElementById('dot2').style.width = '100%';
+        };
+      }
+      slotGrid.appendChild(btn);
+    });
+  }
+
+  function goStep(n) {
+    if (n === 2) renderSlots();
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + n).classList.add('active');
+    if (n <= 4) {
+      ['dot1','dot2','dot3','dot4'].forEach((id, i) => {
+        document.getElementById(id).style.width = (i < n - 1 || (i === n-1)) ? '100%' : (i < n ? '100%' : '0%');
+      });
+      // simpler progressive fill
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById('dot' + i).style.width = i <= n ? '100%' : '0%';
+      }
+    }
+    document.querySelector('.booking-card').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function tryConfirm() {
+    const name = document.getElementById('fName').value.trim();
+    const phone = document.getElementById('fPhone').value.trim();
+    const email = document.getElementById('fEmail').value.trim();
+    if (!name || !phone || !email) {
+      alert('Fyll ut namn, telefon og e-post for å gå vidare.');
+      return;
+    }
+    const guests = document.getElementById('fGuests').value;
+    const opts = { weekday: 'long', day: 'numeric', month: 'long' };
+    const dateStr = selectedDate.toLocaleDateString('nb-NO', opts);
+    const endHour = (parseInt(selectedSlot) + 2) % 24;
+
+    document.getElementById('summaryBox').innerHTML = `
+      <div class="summary-row"><span>Dato</span><span>${dateStr}</span></div>
+      <div class="summary-row"><span>Tidspunkt</span><span>${selectedSlot} – ${String(endHour).padStart(2,'0')}:00</span></div>
+      <div class="summary-row"><span>Namn</span><span>${name}</span></div>
+      <div class="summary-row"><span>Tal på personar</span><span>${guests}</span></div>
+      <div class="summary-row"><span>Kontakt</span><span>${phone}</span></div>
+      <div class="summary-row summary-total"><span>Pris</span><span>450 kr</span></div>
+    `;
+    goStep(4);
+  }
+
+  function finishBooking() {
+    const name = document.getElementById('fName').value.trim();
+    const email = document.getElementById('fEmail').value.trim();
+    const opts = { weekday: 'long', day: 'numeric', month: 'long' };
+    const dateStr = selectedDate.toLocaleDateString('nb-NO', opts);
+    const endHour = (parseInt(selectedSlot) + 2) % 24;
+    document.getElementById('confirmDetail').innerHTML = `
+      <div class="summary-row"><span>Dato</span><span>${dateStr}</span></div>
+      <div class="summary-row"><span>Tidspunkt</span><span>${selectedSlot} – ${String(endHour).padStart(2,'0')}:00</span></div>
+      <div class="summary-row"><span>Stadfesting sendt til</span><span>${email}</span></div>
+    `;
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step5').classList.add('active');
+  }
+
+  function resetBooking() {
+    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('toStep2').disabled = true;
+    document.getElementById('fName').value = '';
+    document.getElementById('fPhone').value = '';
+    document.getElementById('fEmail').value = '';
+    selectedDate = null;
+    selectedSlot = null;
+    for (let i = 1; i <= 4; i++) document.getElementById('dot' + i).style.width = '0%';
+    goStep(1);
+  }
+</script>
+
+</body>
+</html>
