@@ -9,7 +9,7 @@ import {
   toDateOnly,
   type Slot,
 } from '../../lib/availability'
-import { isValidEmail, isValidName, isValidPhone, normalizePhone } from '../../lib/validate'
+import { friendlySubmitError, isValidEmail, isValidName, isValidPhone, normalizePhone, randomCaptcha } from '../../lib/validate'
 import type { BlockedDateRow, BusinessHoursRow, PublicClinicSettingsRow, ServiceRow } from '../../lib/database.types'
 
 interface Props {
@@ -35,9 +35,15 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
+  const [confirmEmail, setConfirmEmail] = useState('')
+  const [website, setWebsite] = useState('') // honeypot — real guests never see or fill this field
   const [guests, setGuests] = useState('2')
   const [pay, setPay] = useState<'vipps' | 'card' | null>(null)
-  const [fieldErrors, setFieldErrors] = useState<{ name?: boolean; phone?: boolean; email?: boolean }>({})
+  const [fieldErrors, setFieldErrors] = useState<{ name?: boolean; phone?: boolean; email?: boolean; confirmEmail?: boolean }>({})
+  const [captcha, setCaptcha] = useState(randomCaptcha)
+  const [captchaAnswer, setCaptchaAnswer] = useState('')
+  const [acceptedRules, setAcceptedRules] = useState(false)
+  const [confirmErrors, setConfirmErrors] = useState<{ captcha?: boolean; terms?: boolean }>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
@@ -69,6 +75,7 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
   function go(n: number) {
     setStep(n)
     setFieldErrors({})
+    setConfirmErrors({})
   }
 
   function clampGuestsValue(v: string): string {
@@ -81,8 +88,34 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
       ? generateSlotsForDate({ date, service, businessHours, clinicSettings, blockedDates, appointments: booked })
       : []
 
+  function attemptSubmit() {
+    const errs = {
+      captcha: parseInt(captchaAnswer, 10) !== captcha.a + captcha.b,
+      terms: !acceptedRules,
+    }
+    if (errs.captcha || errs.terms) {
+      setConfirmErrors(errs)
+      return
+    }
+    setConfirmErrors({})
+    submitBooking()
+  }
+
   async function submitBooking() {
     if (!date || !slot || !service || !pay) return
+
+    // Honeypot: a real guest never sees or fills this field. If it's
+    // filled, this is almost certainly a bot — pretend it worked (so the
+    // bot doesn't learn to look elsewhere) without writing anything.
+    if (website.trim() !== '') {
+      setSubmitting(true)
+      setTimeout(() => {
+        setSubmitting(false)
+        go(6)
+      }, 500)
+      return
+    }
+
     setSubmitting(true)
     setSubmitError(null)
     const { error: insertError } = await supabase.from('appointments').insert({
@@ -104,7 +137,7 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
     })
     setSubmitting(false)
     if (insertError) {
-      setSubmitError(insertError.message)
+      setSubmitError(friendlySubmitError(t.genericSubmitError))
       return
     }
     reloadBooked()
@@ -118,9 +151,15 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
     setName('')
     setPhone('')
     setEmail('')
+    setConfirmEmail('')
+    setWebsite('')
     setGuests('2')
     setPay(null)
     setFieldErrors({})
+    setCaptcha(randomCaptcha())
+    setCaptchaAnswer('')
+    setAcceptedRules(false)
+    setConfirmErrors({})
     setSubmitError(null)
   }
 
@@ -295,6 +334,37 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
               {fieldErrors.email && <div style={sx('margin-top:6px;font-size:12px;color:#D97F4B;')}>{t.fEmailError}</div>}
             </div>
             <div style={sx('grid-column:1/-1;')}>
+              <label style={sx('font-size:13px;color:rgba(246,243,236,0.6);display:block;margin-bottom:6px;')}>{t.fConfirmEmail}</label>
+              <input
+                type="email"
+                value={confirmEmail}
+                onChange={(e) => {
+                  setConfirmEmail(e.target.value)
+                  if (fieldErrors.confirmEmail) setFieldErrors((f) => ({ ...f, confirmEmail: false }))
+                }}
+                onPaste={(e) => e.preventDefault()}
+                placeholder="ola@epost.no"
+                style={sx(
+                  `width:100%;box-sizing:border-box;background:rgba(246,243,236,0.06);border:1px solid ${fieldErrors.confirmEmail ? '#D97F4B' : 'rgba(246,243,236,0.15)'};border-radius:10px;padding:10px 12px;color:#F6F3EC;font-size:14px;`
+                )}
+              />
+              {fieldErrors.confirmEmail && <div style={sx('margin-top:6px;font-size:12px;color:#D97F4B;')}>{t.fConfirmEmailError}</div>}
+            </div>
+            {/* Honeypot: hidden from real guests (off-screen, unfocusable, no
+                autofill), but a naive bot filling every field will fill it
+                too. Left non-empty, the booking is silently dropped. */}
+            <div style={sx('position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;')} aria-hidden="true">
+              <label htmlFor="website">Nettside</label>
+              <input
+                id="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+              />
+            </div>
+            <div style={sx('grid-column:1/-1;')}>
               <label style={sx('font-size:13px;color:rgba(246,243,236,0.6);display:block;margin-bottom:6px;')}>{t.fGuests}</label>
               <div style={sx('display:inline-flex;align-items:stretch;background:rgba(246,243,236,0.06);border:1px solid rgba(246,243,236,0.15);border-radius:10px;overflow:hidden;')}>
                 <button
@@ -326,7 +396,7 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
               <div style={sx('font-size:12px;color:rgba(246,243,236,0.5);margin-top:6px;')}>{t.guestsHint.replace('{max}', String(maxGuests))}</div>
             </div>
           </div>
-          {(fieldErrors.name || fieldErrors.phone || fieldErrors.email) && (
+          {(fieldErrors.name || fieldErrors.phone || fieldErrors.email || fieldErrors.confirmEmail) && (
             <div style={sx('margin-top:16px;font-size:14px;color:#D97F4B;')}>{t.formError}</div>
           )}
           <div style={sx('display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:12px;')}>
@@ -339,8 +409,9 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
                   name: !isValidName(name),
                   phone: !isValidPhone(phone),
                   email: !isValidEmail(email),
+                  confirmEmail: email.trim().toLowerCase() !== confirmEmail.trim().toLowerCase(),
                 }
-                if (errs.name || errs.phone || errs.email) {
+                if (errs.name || errs.phone || errs.email || errs.confirmEmail) {
                   setFieldErrors(errs)
                   return
                 }
@@ -424,6 +495,41 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
               <span>{priceLabel}</span>
             </div>
           </div>
+          <div style={sx('margin-top:18px;')}>
+            <label style={sx('font-size:13px;color:rgba(246,243,236,0.6);display:block;margin-bottom:6px;')}>
+              {t.captchaLabel.replace('{a}', String(captcha.a)).replace('{b}', String(captcha.b))}
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={captchaAnswer}
+              onChange={(e) => {
+                setCaptchaAnswer(e.target.value)
+                if (confirmErrors.captcha) setConfirmErrors((c) => ({ ...c, captcha: false }))
+              }}
+              style={sx(
+                `width:100px;box-sizing:border-box;background:rgba(246,243,236,0.06);border:1px solid ${confirmErrors.captcha ? '#D97F4B' : 'rgba(246,243,236,0.15)'};border-radius:10px;padding:10px 12px;color:#F6F3EC;font-size:14px;`
+              )}
+            />
+            {confirmErrors.captcha && <div style={sx('margin-top:6px;font-size:12px;color:#D97F4B;')}>{t.captchaError}</div>}
+          </div>
+          <label style={sx('display:flex;align-items:flex-start;gap:10px;margin-top:16px;font-size:13px;color:rgba(246,243,236,0.75);cursor:pointer;')}>
+            <input
+              type="checkbox"
+              checked={acceptedRules}
+              onChange={(e) => {
+                setAcceptedRules(e.target.checked)
+                if (confirmErrors.terms) setConfirmErrors((c) => ({ ...c, terms: false }))
+              }}
+              style={sx('margin-top:2px;flex-shrink:0;')}
+            />
+            <span>
+              {t.termsPrefix}
+              <a href="#reglar" style={sx('color:#F6F3EC;text-decoration:underline;')}>{t.rulesLinkLabel}</a>
+              {t.termsSuffix}
+            </span>
+          </label>
+          {confirmErrors.terms && <div style={sx('margin-top:6px;font-size:12px;color:#D97F4B;')}>{t.termsError}</div>}
           {submitError && <div style={sx('margin-top:16px;font-size:14px;color:#D97F4B;')}>{submitError}</div>}
           <div style={sx('display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:12px;')}>
             <button onClick={() => go(4)} style={sx('background:none;color:rgba(246,243,236,0.55);font-size:14px;padding:12px 6px;')}>
@@ -431,7 +537,7 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
             </button>
             <button
               disabled={submitting}
-              onClick={submitBooking}
+              onClick={attemptSubmit}
               style={sx(`background:#B5602A;color:#FFFFFF;padding:11px 26px;border-radius:22px;font-size:14px;font-weight:500;opacity:${submitting ? 0.6 : 1};`)}
             >
               {submitting ? '…' : `${t.payWith} ${payName} · ${priceLabel}`}

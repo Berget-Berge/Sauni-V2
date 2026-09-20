@@ -52,6 +52,15 @@ export interface Copy {
   fNameError: string
   fPhoneError: string
   fEmailError: string
+  fConfirmEmail: string
+  fConfirmEmailError: string
+  captchaLabel: string
+  captchaError: string
+  termsPrefix: string
+  rulesLinkLabel: string
+  termsSuffix: string
+  termsError: string
+  genericSubmitError: string
   next: string
   back: string
   toSummary: string
@@ -108,6 +117,10 @@ export const COPY: Record<Lang, Copy> = {
     s5Title: 'Oppsummering', s5Sub: 'Sjekk at alt stemmer før du betalar',
     fName: 'Fullt namn', fPhone: 'Telefon', fEmail: 'E-post', fGuests: 'Tal på personar', guestsHint: 'Maks {max} personar', formError: 'Rett opp felta under for å gå vidare.',
     fNameError: 'Skriv fullt namn (for- og etternamn).', fPhoneError: 'Skriv eit gyldig norsk telefonnummer (8 sifre).', fEmailError: 'Skriv ein gyldig e-postadresse.',
+    fConfirmEmail: 'Stadfest e-post', fConfirmEmailError: 'E-postadressene er ikkje like.',
+    captchaLabel: 'Kor mykje er {a} + {b}? (for å unngå robotar)', captchaError: 'Feil svar — prøv igjen.',
+    termsPrefix: 'Eg har lese og godtek ', rulesLinkLabel: 'reglane', termsSuffix: ' for bruk av saunaen.', termsError: 'Du må godta reglane for å bestille.',
+    genericSubmitError: 'Klarte ikkje å senda bookinga. Prøv igjen, eller ta kontakt på post@fjordbusauna.no.',
     next: 'Neste', back: 'Tilbake', toSummary: 'Gå til oppsummering', payWith: 'Betal med', price: 'Pris',
     date: 'Dato', time: 'Tidspunkt', persons: 'Personar', payment: 'Betaling', sentTo: 'Stadfesting sendt til', hours2: 'timar privat leige', persons1: 'person', personsN: 'personar',
     doneTitle: 'Booking mottatt', doneBody: 'Du får kode til nøkkelboksen på e-post og SMS rett før avtalen din startar, så snart bookinga er stadfesta.', bookAgain: 'Bestill ei ny tid',
@@ -146,6 +159,10 @@ export const COPY: Record<Lang, Copy> = {
     s5Title: 'Summary', s5Sub: 'Check that everything is right before paying',
     fName: 'Full name', fPhone: 'Phone', fEmail: 'Email', fGuests: 'Number of people', guestsHint: 'Max {max} people', formError: 'Fix the fields below to continue.',
     fNameError: 'Enter your full name (first and last).', fPhoneError: 'Enter a valid Norwegian phone number (8 digits).', fEmailError: 'Enter a valid email address.',
+    fConfirmEmail: 'Confirm email', fConfirmEmailError: 'The email addresses do not match.',
+    captchaLabel: 'What is {a} + {b}? (to keep bots out)', captchaError: 'Wrong answer — try again.',
+    termsPrefix: 'I have read and accept the ', rulesLinkLabel: 'rules', termsSuffix: ' for using the sauna.', termsError: 'You must accept the rules to book.',
+    genericSubmitError: 'Could not send the booking. Please try again, or contact post@fjordbusauna.no.',
     next: 'Next', back: 'Back', toSummary: 'Go to summary', payWith: 'Pay with', price: 'Price',
     date: 'Date', time: 'Time', persons: 'People', payment: 'Payment', sentTo: 'Confirmation sent to', hours2: 'hours private hire', persons1: 'person', personsN: 'people',
     doneTitle: 'Booking received', doneBody: 'You will receive the key-box code by email and SMS just before your slot starts, once your booking is confirmed.', bookAgain: 'Book another time',

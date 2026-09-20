@@ -31,3 +31,16 @@ export function isValidPhone(phone: string): boolean {
 export function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
 }
+
+export function randomCaptcha(): { a: number; b: number } {
+  return { a: 1 + Math.floor(Math.random() * 9), b: 1 + Math.floor(Math.random() * 9) }
+}
+
+// Supabase/Postgres errors are technical and in English (e.g. a 23514
+// check_violation from the constraints in supabase/schema.sql) — never
+// show that raw text to a guest. The form already validates everything
+// client-side before submitting, so a real insert error here is always
+// an unexpected edge case; just show one friendly, localized message.
+export function friendlySubmitError(generic: string): string {
+  return generic
+}
