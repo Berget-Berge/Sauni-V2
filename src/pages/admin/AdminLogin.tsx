@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { sx } from '../../lib/style'
 import { useAdminAuthContext } from '../../context/AdminAuthContext'
+import { useIsMobile } from '../../hooks/useIsMobile'
 
 export function AdminLogin() {
   const { session, isAdmin, signIn, error } = useAdminAuthContext()
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -30,16 +32,16 @@ export function AdminLogin() {
   }
 
   return (
-    <div style={sx('min-height:100vh;display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));')}>
-      <div style={sx('position:relative;min-height:320px;overflow:hidden;background:#12201D;')}>
+    <div style={sx(isMobile ? 'min-height:100vh;display:flex;flex-direction:column;' : 'min-height:100vh;display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));')}>
+      <div style={sx(`position:relative;overflow:hidden;background:#12201D;flex-shrink:0;${isMobile ? 'height:160px;' : 'min-height:320px;'}`)}>
         <img src="/images/kveld.jpg" alt="" style={sx('position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.7;')} />
         <div style={sx('position:absolute;inset:0;background:linear-gradient(180deg, rgba(18,32,29,0.2), rgba(18,32,29,0.85));')} />
-        <div style={sx('position:absolute;left:40px;bottom:40px;color:#F6F3EC;')}>
-          <div style={sx('font-size:13px;color:rgba(246,243,236,0.6);margin-bottom:8px;')}>Fjordbu Sauna</div>
-          <div style={sx('font-size:28px;font-weight:600;letter-spacing:-0.01em;')}>Administrasjon</div>
+        <div style={sx(`position:absolute;left:${isMobile ? '20px' : '40px'};bottom:${isMobile ? '18px' : '40px'};color:#F6F3EC;`)}>
+          <div style={sx('font-size:13px;color:rgba(246,243,236,0.6);margin-bottom:6px;')}>Fjordbu Sauna</div>
+          <div style={sx(`font-weight:600;letter-spacing:-0.01em;${isMobile ? 'font-size:20px;' : 'font-size:28px;'}`)}>Administrasjon</div>
         </div>
       </div>
-      <div style={sx('display:flex;align-items:center;justify-content:center;padding:40px;')}>
+      <div style={sx(`display:flex;align-items:center;justify-content:center;box-sizing:border-box;${isMobile ? 'padding:28px 20px 40px;' : 'padding:40px;'}`)}>
         <form onSubmit={handleSubmit} style={sx('width:100%;max-width:380px;animation:fadein .35s ease;')}>
           <h1 style={sx('margin:0 0 6px;font-size:26px;font-weight:600;letter-spacing:-0.01em;')}>Logg inn</h1>
           <p style={sx('margin:0 0 28px;color:#8A8073;font-size:15px;font-weight:300;')}>Berre for administratorar av Fjordbu Sauna.</p>

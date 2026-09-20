@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { sx } from '../../lib/style'
 import { supabase } from '../../lib/supabase'
+import { useIsMobile } from '../../hooks/useIsMobile'
 import type { BusinessHoursRow } from '../../lib/database.types'
 
 const DAY_NAMES = ['Sundag', 'Måndag', 'Tysdag', 'Onsdag', 'Torsdag', 'Fredag', 'Laurdag']
@@ -10,6 +11,7 @@ export function Hours() {
   const [hours, setHours] = useState<BusinessHoursRow[]>([])
   const [loading, setLoading] = useState(true)
   const [saved, setSaved] = useState(false)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     async function load() {
@@ -39,57 +41,116 @@ export function Hours() {
 
   if (loading) return <div style={sx('color:#8A8073;')}>…</div>
 
+  const toggle = (h: BusinessHoursRow) => (
+    <button
+      onClick={() => patch(h.weekday, { is_open: !h.is_open })}
+      style={sx(`width:40px;height:22px;border-radius:11px;background:${h.is_open ? '#B5602A' : 'rgba(18,32,29,0.2)'};position:relative;transition:background .2s;flex-shrink:0;`)}
+    >
+      <span style={sx(`position:absolute;top:2px;left:${h.is_open ? '20px' : '2px'};width:18px;height:18px;border-radius:50%;background:#FFFFFF;transition:left .2s;display:block;`)} />
+    </button>
+  )
+
+  const timeInputStyle = sx('border:1px solid rgba(18,32,29,0.15);border-radius:8px;padding:6px 8px;font-size:13px;')
+
   return (
     <div style={sx('animation:fadein .3s ease;')}>
       <h1 style={sx('margin:0 0 6px;font-size:28px;font-weight:600;letter-spacing:-0.01em;')}>Opningstider</h1>
       <p style={sx('margin:0 0 24px;color:#8A8073;font-size:14px;font-weight:300;')}>
         Slott blir berre generert innanfor desse tidene. Siste innsjekk avgjer siste moglege start.
       </p>
-      <div style={sx('background:#FFFFFF;border:1px solid rgba(18,32,29,0.1);border-radius:16px;overflow:hidden;max-width:760px;')}>
-        <div style={sx('display:grid;grid-template-columns:1.2fr 0.8fr 1fr 1fr 1fr;gap:12px;padding:12px 20px;font-size:12px;color:#8A8073;font-weight:500;border-bottom:1px solid rgba(18,32,29,0.08);')}>
-          <span>Dag</span>
-          <span>Open</span>
-          <span>Frå</span>
-          <span>Til</span>
-          <span>Siste innsjekk</span>
-        </div>
-        {DISPLAY_ORDER.map((weekday) => {
-          const h = hours.find((x) => x.weekday === weekday)
-          if (!h) return null
-          return (
-            <div
-              key={weekday}
-              style={sx(`display:grid;grid-template-columns:1.2fr 0.8fr 1fr 1fr 1fr;gap:12px;padding:12px 20px;align-items:center;border-bottom:1px solid rgba(18,32,29,0.06);font-size:14px;opacity:${h.is_open ? 1 : 0.5};`)}
-            >
-              <span style={sx('font-weight:500;')}>{DAY_NAMES[weekday]}</span>
-              <button
-                onClick={() => patch(weekday, { is_open: !h.is_open })}
-                style={sx(`width:40px;height:22px;border-radius:11px;background:${h.is_open ? '#B5602A' : 'rgba(18,32,29,0.2)'};position:relative;transition:background .2s;`)}
+
+      {isMobile ? (
+        <div style={sx('display:flex;flex-direction:column;gap:12px;')}>
+          {DISPLAY_ORDER.map((weekday) => {
+            const h = hours.find((x) => x.weekday === weekday)
+            if (!h) return null
+            return (
+              <div
+                key={weekday}
+                style={sx(`background:#FFFFFF;border:1px solid rgba(18,32,29,0.1);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;opacity:${h.is_open ? 1 : 0.6};`)}
               >
-                <span style={sx(`position:absolute;top:2px;left:${h.is_open ? '20px' : '2px'};width:18px;height:18px;border-radius:50%;background:#FFFFFF;transition:left .2s;display:block;`)} />
-              </button>
-              <input
-                type="time"
-                value={h.start_time.slice(0, 5)}
-                onChange={(e) => patch(weekday, { start_time: `${e.target.value}:00` })}
-                style={sx('border:1px solid rgba(18,32,29,0.15);border-radius:8px;padding:6px 8px;font-size:13px;')}
-              />
-              <input
-                type="time"
-                value={h.end_time.slice(0, 5)}
-                onChange={(e) => patch(weekday, { end_time: `${e.target.value}:00` })}
-                style={sx('border:1px solid rgba(18,32,29,0.15);border-radius:8px;padding:6px 8px;font-size:13px;')}
-              />
-              <input
-                type="time"
-                value={h.last_checkin_time.slice(0, 5)}
-                onChange={(e) => patch(weekday, { last_checkin_time: `${e.target.value}:00` })}
-                style={sx('border:1px solid rgba(18,32,29,0.15);border-radius:8px;padding:6px 8px;font-size:13px;')}
-              />
-            </div>
-          )
-        })}
-      </div>
+                <div style={sx('display:flex;justify-content:space-between;align-items:center;')}>
+                  <span style={sx('font-weight:600;font-size:15px;')}>{DAY_NAMES[weekday]}</span>
+                  {toggle(h)}
+                </div>
+                {h.is_open && (
+                  <div style={sx('display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:8px;')}>
+                    <div>
+                      <div style={sx('font-size:11px;color:#8A8073;margin-bottom:4px;')}>Frå</div>
+                      <input
+                        type="time"
+                        value={h.start_time.slice(0, 5)}
+                        onChange={(e) => patch(weekday, { start_time: `${e.target.value}:00` })}
+                        style={sx('width:100%;box-sizing:border-box;border:1px solid rgba(18,32,29,0.15);border-radius:8px;padding:6px 6px;font-size:13px;')}
+                      />
+                    </div>
+                    <div>
+                      <div style={sx('font-size:11px;color:#8A8073;margin-bottom:4px;')}>Til</div>
+                      <input
+                        type="time"
+                        value={h.end_time.slice(0, 5)}
+                        onChange={(e) => patch(weekday, { end_time: `${e.target.value}:00` })}
+                        style={sx('width:100%;box-sizing:border-box;border:1px solid rgba(18,32,29,0.15);border-radius:8px;padding:6px 6px;font-size:13px;')}
+                      />
+                    </div>
+                    <div>
+                      <div style={sx('font-size:11px;color:#8A8073;margin-bottom:4px;')}>Siste inn</div>
+                      <input
+                        type="time"
+                        value={h.last_checkin_time.slice(0, 5)}
+                        onChange={(e) => patch(weekday, { last_checkin_time: `${e.target.value}:00` })}
+                        style={sx('width:100%;box-sizing:border-box;border:1px solid rgba(18,32,29,0.15);border-radius:8px;padding:6px 6px;font-size:13px;')}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      ) : (
+        <div style={sx('background:#FFFFFF;border:1px solid rgba(18,32,29,0.1);border-radius:16px;overflow:hidden;max-width:760px;')}>
+          <div style={sx('display:grid;grid-template-columns:1.2fr 0.8fr 1fr 1fr 1fr;gap:12px;padding:12px 20px;font-size:12px;color:#8A8073;font-weight:500;border-bottom:1px solid rgba(18,32,29,0.08);')}>
+            <span>Dag</span>
+            <span>Open</span>
+            <span>Frå</span>
+            <span>Til</span>
+            <span>Siste innsjekk</span>
+          </div>
+          {DISPLAY_ORDER.map((weekday) => {
+            const h = hours.find((x) => x.weekday === weekday)
+            if (!h) return null
+            return (
+              <div
+                key={weekday}
+                style={sx(`display:grid;grid-template-columns:1.2fr 0.8fr 1fr 1fr 1fr;gap:12px;padding:12px 20px;align-items:center;border-bottom:1px solid rgba(18,32,29,0.06);font-size:14px;opacity:${h.is_open ? 1 : 0.5};`)}
+              >
+                <span style={sx('font-weight:500;')}>{DAY_NAMES[weekday]}</span>
+                {toggle(h)}
+                <input
+                  type="time"
+                  value={h.start_time.slice(0, 5)}
+                  onChange={(e) => patch(weekday, { start_time: `${e.target.value}:00` })}
+                  style={timeInputStyle}
+                />
+                <input
+                  type="time"
+                  value={h.end_time.slice(0, 5)}
+                  onChange={(e) => patch(weekday, { end_time: `${e.target.value}:00` })}
+                  style={timeInputStyle}
+                />
+                <input
+                  type="time"
+                  value={h.last_checkin_time.slice(0, 5)}
+                  onChange={(e) => patch(weekday, { last_checkin_time: `${e.target.value}:00` })}
+                  style={timeInputStyle}
+                />
+              </div>
+            )
+          })}
+        </div>
+      )}
+
       <button onClick={save} style={sx('margin-top:20px;background:#B5602A;color:#FFFFFF;padding:10px 22px;border-radius:20px;font-size:14px;font-weight:500;')}>
         {saved ? 'Lagra ✓' : 'Lagre endringar'}
       </button>

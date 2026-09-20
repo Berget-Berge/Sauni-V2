@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { sx } from '../../lib/style'
 import { supabase } from '../../lib/supabase'
+import { useIsMobile } from '../../hooks/useIsMobile'
 import type { FaqRow, RuleRow } from '../../lib/database.types'
 
 type Tab = 'faq' | 'rules'
 
 export function Content() {
+  const isMobile = useIsMobile()
   const [tab, setTab] = useState<Tab>('faq')
   const [faq, setFaq] = useState<FaqRow[]>([])
   const [rules, setRules] = useState<RuleRow[]>([])
@@ -96,8 +98,22 @@ export function Content() {
       {tab === 'faq' && (
         <div style={sx('display:flex;flex-direction:column;gap:12px;max-width:900px;')}>
           {faq.map((f, i) => (
-            <div key={f.id} style={sx('background:#FFFFFF;border:1px solid rgba(18,32,29,0.1);border-radius:16px;padding:18px 22px;display:grid;grid-template-columns:32px minmax(0,1fr) minmax(0,1fr) auto;gap:16px;align-items:start;')}>
-              <span style={sx('font-size:12px;font-weight:600;color:#B5602A;padding-top:8px;')}>{String(i + 1).padStart(2, '0')}</span>
+            <div
+              key={f.id}
+              style={sx(
+                isMobile
+                  ? 'background:#FFFFFF;border:1px solid rgba(18,32,29,0.1);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:14px;'
+                  : 'background:#FFFFFF;border:1px solid rgba(18,32,29,0.1);border-radius:16px;padding:18px 22px;display:grid;grid-template-columns:32px minmax(0,1fr) minmax(0,1fr) auto;gap:16px;align-items:start;'
+              )}
+            >
+              <div style={sx(isMobile ? 'display:flex;justify-content:space-between;align-items:center;' : 'display:contents;')}>
+                <span style={sx('font-size:12px;font-weight:600;color:#B5602A;')}>{String(i + 1).padStart(2, '0')}</span>
+                {isMobile && (
+                  <button onClick={() => removeFaq(f.id)} style={sx('background:none;color:#8A8073;font-size:13px;')}>
+                    Slett
+                  </button>
+                )}
+              </div>
               <div style={sx('display:flex;flex-direction:column;gap:8px;')}>
                 <div style={sx('font-size:11px;color:#8A8073;')}>Spørsmål (NN)</div>
                 <input value={f.question_nn} onChange={(e) => patchFaq(f.id, { question_nn: e.target.value })} style={sx('width:100%;box-sizing:border-box;border:1px solid rgba(18,32,29,0.15);border-radius:8px;padding:8px 10px;font-size:13px;')} />
@@ -110,9 +126,11 @@ export function Content() {
                 <div style={sx('font-size:11px;color:#8A8073;')}>Answer (EN)</div>
                 <textarea value={f.answer_en} onChange={(e) => patchFaq(f.id, { answer_en: e.target.value })} rows={3} style={textareaStyle} />
               </div>
-              <button onClick={() => removeFaq(f.id)} style={sx('background:none;color:#8A8073;font-size:13px;padding-top:8px;')}>
-                Slett
-              </button>
+              {!isMobile && (
+                <button onClick={() => removeFaq(f.id)} style={sx('background:none;color:#8A8073;font-size:13px;padding-top:8px;')}>
+                  Slett
+                </button>
+              )}
             </div>
           ))}
           <button onClick={addFaq} style={sx('align-self:flex-start;background:#FFFFFF;color:#12201D;padding:10px 18px;border-radius:20px;font-size:14px;font-weight:500;border:1px dashed rgba(18,32,29,0.3);')}>
@@ -124,8 +142,22 @@ export function Content() {
       {tab === 'rules' && (
         <div style={sx('display:flex;flex-direction:column;gap:12px;max-width:900px;')}>
           {rules.map((r, i) => (
-            <div key={r.id} style={sx('background:#FFFFFF;border:1px solid rgba(18,32,29,0.1);border-radius:16px;padding:18px 22px;display:grid;grid-template-columns:32px minmax(0,1fr) minmax(0,1fr) auto;gap:16px;align-items:start;')}>
-              <span style={sx('font-size:12px;font-weight:600;color:#B5602A;padding-top:8px;')}>{String(i + 1).padStart(2, '0')}</span>
+            <div
+              key={r.id}
+              style={sx(
+                isMobile
+                  ? 'background:#FFFFFF;border:1px solid rgba(18,32,29,0.1);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:14px;'
+                  : 'background:#FFFFFF;border:1px solid rgba(18,32,29,0.1);border-radius:16px;padding:18px 22px;display:grid;grid-template-columns:32px minmax(0,1fr) minmax(0,1fr) auto;gap:16px;align-items:start;'
+              )}
+            >
+              <div style={sx(isMobile ? 'display:flex;justify-content:space-between;align-items:center;' : 'display:contents;')}>
+                <span style={sx('font-size:12px;font-weight:600;color:#B5602A;')}>{String(i + 1).padStart(2, '0')}</span>
+                {isMobile && (
+                  <button onClick={() => removeRule(r.id)} style={sx('background:none;color:#8A8073;font-size:13px;')}>
+                    Slett
+                  </button>
+                )}
+              </div>
               <div>
                 <div style={sx('font-size:11px;color:#8A8073;margin-bottom:4px;')}>Nynorsk</div>
                 <textarea value={r.text_nn} onChange={(e) => patchRule(r.id, { text_nn: e.target.value })} rows={3} style={textareaStyle} />
@@ -134,9 +166,11 @@ export function Content() {
                 <div style={sx('font-size:11px;color:#8A8073;margin-bottom:4px;')}>English</div>
                 <textarea value={r.text_en} onChange={(e) => patchRule(r.id, { text_en: e.target.value })} rows={3} style={textareaStyle} />
               </div>
-              <button onClick={() => removeRule(r.id)} style={sx('background:none;color:#8A8073;font-size:13px;padding-top:8px;')}>
-                Slett
-              </button>
+              {!isMobile && (
+                <button onClick={() => removeRule(r.id)} style={sx('background:none;color:#8A8073;font-size:13px;padding-top:8px;')}>
+                  Slett
+                </button>
+              )}
             </div>
           ))}
           <button onClick={addRule} style={sx('align-self:flex-start;background:#FFFFFF;color:#12201D;padding:10px 18px;border-radius:20px;font-size:14px;font-weight:500;border:1px dashed rgba(18,32,29,0.3);')}>
