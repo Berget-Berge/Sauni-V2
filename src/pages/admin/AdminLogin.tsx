@@ -1,12 +1,26 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { sx } from '../../lib/style'
 import { useAdminAuthContext } from '../../context/AdminAuthContext'
 
 export function AdminLogin() {
-  const { signIn, error } = useAdminAuthContext()
+  const { session, isAdmin, signIn, error } = useAdminAuthContext()
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
+
+  // signIn() only updates auth state (session/isAdmin) — it never
+  // navigates. Without this, a successful login left you sitting on
+  // /admin/login with nothing telling the router to move to /admin,
+  // so the dashboard only appeared once you manually edited the URL.
+  // This also covers the case of an already-logged-in admin opening
+  // /admin/login directly.
+  useEffect(() => {
+    if (session && isAdmin) {
+      navigate('/admin', { replace: true })
+    }
+  }, [session, isAdmin, navigate])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
