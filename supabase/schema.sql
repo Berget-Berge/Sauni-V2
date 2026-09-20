@@ -5,8 +5,30 @@
 -- Table/column names follow the exact contract in
 -- "PROMPT - Fjordbu Sauna backend.md" — do not rename or add columns
 -- without updating src/lib/database.types.ts to match.
+--
+-- This script is safe to re-run: it drops and recreates its own tables
+-- first, so a table left over from an earlier/partial setup (e.g. missing
+-- a column like sort_order) can't cause "column ... does not exist"
+-- errors later. Only run this on a project with no real bookings yet —
+-- re-running it deletes any rows already in these tables.
 
 create extension if not exists pgcrypto; -- for gen_random_uuid()
+
+-- ============================================================
+-- RESET — drop anything left over from an earlier setup attempt so the
+-- CREATE TABLE statements below always produce the exact contract.
+-- ============================================================
+drop view if exists clinic_settings_public;
+drop function if exists get_booked_slots(date, date);
+drop function if exists is_admin();
+drop table if exists appointments cascade;
+drop table if exists services cascade;
+drop table if exists business_hours cascade;
+drop table if exists blocked_dates cascade;
+drop table if exists clinic_settings cascade;
+drop table if exists faq cascade;
+drop table if exists rules cascade;
+drop table if exists admin_users cascade;
 
 -- ============================================================
 -- TABLES
