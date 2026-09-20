@@ -48,9 +48,13 @@ create table if not exists services (
 
 create table if not exists appointments (
   id uuid primary key default gen_random_uuid(),
-  full_name text not null,
-  email text not null,
-  phone text not null,
+  -- Format checks, not fraud detection: they stop the empty/garbled cases
+  -- ("a", "-", no @ in the email) and mirror the checks in
+  -- src/lib/validate.ts. Enforced here too because the anon key is
+  -- public, so the frontend form can always be bypassed.
+  full_name text not null check (full_name ~ '^\S+(\s+\S+)+$' and length(btrim(full_name)) >= 3),
+  email text not null check (email ~* '^[^\s@]+@[^\s@]+\.[^\s@]+$'),
+  phone text not null check (regexp_replace(phone, '[\s()-]', '', 'g') ~ '^(\+47|0047)?[2-9][0-9]{7}$'),
   service_id uuid not null references services(id),
   appointment_date date not null,
   start_time time not null,

@@ -49,6 +49,9 @@ export interface Copy {
   fGuests: string
   guestsHint: string
   formError: string
+  fNameError: string
+  fPhoneError: string
+  fEmailError: string
   next: string
   back: string
   toSummary: string
@@ -103,7 +106,8 @@ export const COPY: Record<Lang, Copy> = {
     s1Title: 'Vel dato', s1Sub: 'Ledige dagar den neste veka', s2Title: 'Vel tidspunkt', s3Title: 'Dine opplysningar', s3Sub: 'Vi sender kode til nøkkelboksen på e-post og SMS',
     s4Title: 'Vel betaling', s4Sub: 'Du blir send vidare til trygg betaling i neste steg', vippsSub: 'Betal med mobilen', cardTitle: 'Kort', cardSub: 'Visa, Mastercard',
     s5Title: 'Oppsummering', s5Sub: 'Sjekk at alt stemmer før du betalar',
-    fName: 'Fullt namn', fPhone: 'Telefon', fEmail: 'E-post', fGuests: 'Tal på personar', guestsHint: 'Maks {max} personar', formError: 'Fyll ut namn, telefon og e-post for å gå vidare.',
+    fName: 'Fullt namn', fPhone: 'Telefon', fEmail: 'E-post', fGuests: 'Tal på personar', guestsHint: 'Maks {max} personar', formError: 'Rett opp felta under for å gå vidare.',
+    fNameError: 'Skriv fullt namn (for- og etternamn).', fPhoneError: 'Skriv eit gyldig norsk telefonnummer (8 sifre).', fEmailError: 'Skriv ein gyldig e-postadresse.',
     next: 'Neste', back: 'Tilbake', toSummary: 'Gå til oppsummering', payWith: 'Betal med', price: 'Pris',
     date: 'Dato', time: 'Tidspunkt', persons: 'Personar', payment: 'Betaling', sentTo: 'Stadfesting sendt til', hours2: 'timar privat leige', persons1: 'person', personsN: 'personar',
     doneTitle: 'Booking mottatt', doneBody: 'Du får kode til nøkkelboksen på e-post og SMS rett før avtalen din startar, så snart bookinga er stadfesta.', bookAgain: 'Bestill ei ny tid',
@@ -140,7 +144,8 @@ export const COPY: Record<Lang, Copy> = {
     s1Title: 'Choose a date', s1Sub: 'Available days this week', s2Title: 'Choose a time', s3Title: 'Your details', s3Sub: 'We send the key-box code by email and SMS',
     s4Title: 'Payment', s4Sub: 'You will be taken to secure payment in the next step', vippsSub: 'Pay with your phone', cardTitle: 'Card', cardSub: 'Visa, Mastercard',
     s5Title: 'Summary', s5Sub: 'Check that everything is right before paying',
-    fName: 'Full name', fPhone: 'Phone', fEmail: 'Email', fGuests: 'Number of people', guestsHint: 'Max {max} people', formError: 'Fill in name, phone and email to continue.',
+    fName: 'Full name', fPhone: 'Phone', fEmail: 'Email', fGuests: 'Number of people', guestsHint: 'Max {max} people', formError: 'Fix the fields below to continue.',
+    fNameError: 'Enter your full name (first and last).', fPhoneError: 'Enter a valid Norwegian phone number (8 digits).', fEmailError: 'Enter a valid email address.',
     next: 'Next', back: 'Back', toSummary: 'Go to summary', payWith: 'Pay with', price: 'Price',
     date: 'Date', time: 'Time', persons: 'People', payment: 'Payment', sentTo: 'Confirmation sent to', hours2: 'hours private hire', persons1: 'person', personsN: 'people',
     doneTitle: 'Booking received', doneBody: 'You will receive the key-box code by email and SMS just before your slot starts, once your booking is confirmed.', bookAgain: 'Book another time',

@@ -9,6 +9,7 @@ import {
   toDateOnly,
   type Slot,
 } from '../../lib/availability'
+import { isValidEmail, isValidName, isValidPhone, normalizePhone } from '../../lib/validate'
 import type { BlockedDateRow, BusinessHoursRow, PublicClinicSettingsRow, ServiceRow } from '../../lib/database.types'
 
 interface Props {
@@ -36,7 +37,7 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
   const [email, setEmail] = useState('')
   const [guests, setGuests] = useState('2')
   const [pay, setPay] = useState<'vipps' | 'card' | null>(null)
-  const [error, setError] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<{ name?: boolean; phone?: boolean; email?: boolean }>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
@@ -67,7 +68,7 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
 
   function go(n: number) {
     setStep(n)
-    setError(false)
+    setFieldErrors({})
   }
 
   function clampGuestsValue(v: string): string {
@@ -85,9 +86,9 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
     setSubmitting(true)
     setSubmitError(null)
     const { error: insertError } = await supabase.from('appointments').insert({
-      full_name: name.trim(),
+      full_name: name.trim().replace(/\s+/g, ' '),
       email: email.trim(),
-      phone: phone.trim(),
+      phone: normalizePhone(phone),
       service_id: service.id,
       appointment_date: toDateOnly(date),
       start_time: timeToHms(slot.start),
@@ -119,7 +120,7 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
     setEmail('')
     setGuests('2')
     setPay(null)
-    setError(false)
+    setFieldErrors({})
     setSubmitError(null)
   }
 
@@ -250,36 +251,48 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
               <input
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value)
+                  if (fieldErrors.name) setFieldErrors((f) => ({ ...f, name: false }))
+                }}
                 placeholder="Ola Nordmann"
                 style={sx(
-                  'width:100%;box-sizing:border-box;background:rgba(246,243,236,0.06);border:1px solid rgba(246,243,236,0.15);border-radius:10px;padding:10px 12px;color:#F6F3EC;font-size:14px;'
+                  `width:100%;box-sizing:border-box;background:rgba(246,243,236,0.06);border:1px solid ${fieldErrors.name ? '#D97F4B' : 'rgba(246,243,236,0.15)'};border-radius:10px;padding:10px 12px;color:#F6F3EC;font-size:14px;`
                 )}
               />
+              {fieldErrors.name && <div style={sx('margin-top:6px;font-size:12px;color:#D97F4B;')}>{t.fNameError}</div>}
             </div>
             <div>
               <label style={sx('font-size:13px;color:rgba(246,243,236,0.6);display:block;margin-bottom:6px;')}>{t.fPhone}</label>
               <input
                 type="tel"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  setPhone(e.target.value)
+                  if (fieldErrors.phone) setFieldErrors((f) => ({ ...f, phone: false }))
+                }}
                 placeholder="900 00 000"
                 style={sx(
-                  'width:100%;box-sizing:border-box;background:rgba(246,243,236,0.06);border:1px solid rgba(246,243,236,0.15);border-radius:10px;padding:10px 12px;color:#F6F3EC;font-size:14px;'
+                  `width:100%;box-sizing:border-box;background:rgba(246,243,236,0.06);border:1px solid ${fieldErrors.phone ? '#D97F4B' : 'rgba(246,243,236,0.15)'};border-radius:10px;padding:10px 12px;color:#F6F3EC;font-size:14px;`
                 )}
               />
+              {fieldErrors.phone && <div style={sx('margin-top:6px;font-size:12px;color:#D97F4B;')}>{t.fPhoneError}</div>}
             </div>
             <div style={sx('grid-column:1/-1;')}>
               <label style={sx('font-size:13px;color:rgba(246,243,236,0.6);display:block;margin-bottom:6px;')}>{t.fEmail}</label>
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  if (fieldErrors.email) setFieldErrors((f) => ({ ...f, email: false }))
+                }}
                 placeholder="ola@epost.no"
                 style={sx(
-                  'width:100%;box-sizing:border-box;background:rgba(246,243,236,0.06);border:1px solid rgba(246,243,236,0.15);border-radius:10px;padding:10px 12px;color:#F6F3EC;font-size:14px;'
+                  `width:100%;box-sizing:border-box;background:rgba(246,243,236,0.06);border:1px solid ${fieldErrors.email ? '#D97F4B' : 'rgba(246,243,236,0.15)'};border-radius:10px;padding:10px 12px;color:#F6F3EC;font-size:14px;`
                 )}
               />
+              {fieldErrors.email && <div style={sx('margin-top:6px;font-size:12px;color:#D97F4B;')}>{t.fEmailError}</div>}
             </div>
             <div style={sx('grid-column:1/-1;')}>
               <label style={sx('font-size:13px;color:rgba(246,243,236,0.6);display:block;margin-bottom:6px;')}>{t.fGuests}</label>
@@ -313,15 +326,22 @@ export function BookingCard({ services, businessHours, blockedDates, clinicSetti
               <div style={sx('font-size:12px;color:rgba(246,243,236,0.5);margin-top:6px;')}>{t.guestsHint.replace('{max}', String(maxGuests))}</div>
             </div>
           </div>
-          {error && <div style={sx('margin-top:16px;font-size:14px;color:#D97F4B;')}>{t.formError}</div>}
+          {(fieldErrors.name || fieldErrors.phone || fieldErrors.email) && (
+            <div style={sx('margin-top:16px;font-size:14px;color:#D97F4B;')}>{t.formError}</div>
+          )}
           <div style={sx('display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:12px;')}>
             <button onClick={() => go(2)} style={sx('background:none;color:rgba(246,243,236,0.55);font-size:14px;padding:12px 6px;')}>
               ← {t.back}
             </button>
             <button
               onClick={() => {
-                if (!name.trim() || !phone.trim() || !email.trim()) {
-                  setError(true)
+                const errs = {
+                  name: !isValidName(name),
+                  phone: !isValidPhone(phone),
+                  email: !isValidEmail(email),
+                }
+                if (errs.name || errs.phone || errs.email) {
+                  setFieldErrors(errs)
                   return
                 }
                 go(4)
