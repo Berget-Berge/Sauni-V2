@@ -1,0 +1,45 @@
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  background: #F6F3EC;
+  color: #12201D;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+}
+input, select, textarea {
+  font-family: inherit;
+}
+input::placeholder {
+  color: rgba(18, 32, 29, 0.35);
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Light hover polish for buttons/links inside the ported design
+   (the original mockup used per-element style-hover attributes, which
+   don't exist in plain CSS/JSX — this keeps the same spirit cheaply). */
+a:hover, button:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+button:disabled {
+  filter: none;
+}
